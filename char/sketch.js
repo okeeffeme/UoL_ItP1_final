@@ -45,16 +45,21 @@ function mainBody(posX, posY) {
 	fill(cFur);
 	rect(posX-15, posY-66,30,46,20);
 }
-function drawEye(posX, posY, adj) {
+function drawEye(posX, posY, adj, side=0) {
 	fill('white');
 	stroke('black');
 	strokeWeight(2);
-	ellipse(posX+adj,posY-52,8,8) //eye;
+	ellipse(posX+adj,posY-52,8-side,8) //eye;
 }
 
 function drawFoot(posX,posY, adjX, adjY=2) {
 	fill(cFur);
 	ellipse(posX+adjX,posY-adjY,10,6) //foot r
+}
+
+function drawFootVertical(posX,posY, adjX, adjY=2) {
+	fill(cFur);
+	ellipse(posX+adjX,posY-adjY,6,10) //foot r
 }
 
 function drawMouthFront(posX, posY) {
@@ -169,7 +174,7 @@ function draw()
 	fill(cFur)
 	stroke('#4f2d0c');
 	arc(gameChar_x+6,gameChar_y-54, 10,10,0,PI); //ear
-	drawEye(gameChar_x,gameChar_y,-11);
+	drawEye(gameChar_x,gameChar_y,-11,2);
 
 
 	//Walking, turned right
@@ -205,7 +210,7 @@ function draw()
 	fill(cFur)
 	stroke('#4f2d0c');
 	arc(gameChar_x-6,gameChar_y-54, 10,10,0,PI); //ear
-	drawEye(gameChar_x,gameChar_y,11);
+	drawEye(gameChar_x,gameChar_y,11,2);
 
 
 	//Jumping right
@@ -221,6 +226,29 @@ function draw()
 	gameChar_y = 537;
 	//Add your code here ...
 
+	strokeWeight(5);
+	stroke(cFur);
+	noFill();
+	arc(gameChar_x-6, gameChar_y-2, 40,40,5, 6); //legs
+	arc(gameChar_x-26, gameChar_y-25, 40,40,.2, 1.2); //legs
+	noStroke();
+	mainBody(gameChar_x, gameChar_y);
+	drawFootVertical(gameChar_x,gameChar_y,-19,4);
+	drawFoot(gameChar_x,gameChar_y,16,6);
+	drawMouthSide(gameChar_x,gameChar_y,12);
+	
+	
+	strokeWeight(5);
+	noFill();
+	stroke(cFurL);
+	arc(gameChar_x+10, gameChar_y-40, 30,10,2,3.3); //arm front
+
+	strokeWeight(1);
+	fill(cFur);
+	stroke('#4f2d0c');
+	arc(gameChar_x-6,gameChar_y-54, 10,10,0,PI); //ear
+	drawEye(gameChar_x,gameChar_y,11,2);
+
 
 	//Jumping to the left
 	stroke(100);
@@ -234,5 +262,28 @@ function draw()
 	gameChar_x = 245;
 	gameChar_y = 537;
 	//Add your code here ...
+	strokeWeight(5);
+  	stroke(cFur);
+	noFill()
+	arc(gameChar_x+6, gameChar_y-2, 40,40,3.4, 4.4); //legs
+	arc(gameChar_x+30, gameChar_y-24, 40,40,2.2, 16); //legs
+	noStroke();
+	mainBody(gameChar_x, gameChar_y);
+	drawFoot(gameChar_x,gameChar_y,-16,6);
+	drawFootVertical(gameChar_x,gameChar_y,20,4);
+	drawMouthSide(gameChar_x,gameChar_y);
+	
+	
+	strokeWeight(5);
+	noFill()
+	stroke(cFurL);
+	arc(gameChar_x-7, gameChar_y-40, 30,10,6,14); //arm front
+
+
+	strokeWeight(1);
+	fill(cFur)
+	stroke('#4f2d0c');
+	arc(gameChar_x+6,gameChar_y-54, 10,10,0,PI); //ear
+	drawEye(gameChar_x,gameChar_y,-11,2);
 
 }
