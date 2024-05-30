@@ -33,10 +33,23 @@ WARNING: Do not get too carried away. Around 10-20 lines of code should work for
 
 var gameChar_x = 0;
 var gameChar_y = 0;
+let cFur = '#F5BB12';
+let cFurL = '#f5CD3D';
 
 function setup()
 {
 	createCanvas(400, 600);
+}
+
+function mainBody(posX, posY) {
+	fill(cFur);
+	rect(posX-15, posY-66,30,46,20);
+}
+function drawEye(posX, posY, adj) {
+	fill('white');
+	stroke('black');
+	strokeWeight(2);
+	ellipse(posX+adj,posY-52,8,8) //eye;
 }
 
 function draw()
@@ -55,8 +68,25 @@ function draw()
 	gameChar_x = 45;
 	gameChar_y = 137;
 	//Add your code here ...
+	mainBody(gameChar_x, gameChar_y);
+	ellipse(gameChar_x+12,gameChar_x+90,10,6) //foot r
+	ellipse(gameChar_x-12,gameChar_x+90,10,6) //foot l
+	strokeWeight(4);
+  	stroke(cFur);
+	noFill()
+	arc(gameChar_x, gameChar_y-30, 40,50,PI,PI*2); //arms
+	arc(gameChar_x, gameChar_y-2, 20,70,PI, PI*2); //legs
+	drawEye(gameChar_x,gameChar_y,-8);
+	drawEye(gameChar_x,gameChar_y,8);
 
-
+	stroke(cFurL);
+	strokeWeight(6)
+	noFill();
+	arc(gameChar_x, gameChar_y-45, 8,10,PI,PI*2); //arms
+	fill('black')
+	noStroke();
+	ellipse(gameChar_x,gameChar_x+45,6,4) //nose
+	
 	//Jumping facing forwards
 	stroke(100);
 	noFill();
@@ -68,7 +98,7 @@ function draw()
 	gameChar_x = 245;
 	gameChar_y = 137;
 	//Add your code here ...
-
+	
 
 	//Walking, turned left
 	stroke(100);
