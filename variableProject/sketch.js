@@ -43,11 +43,55 @@ function setup()
 
 	canyon = {
 		x_pos: 0, 
-		width: 100
+		width: 144
+	}
+
+	collectable = {
+		x_pos: 100,
+		y_pos: 100,
+		size: 50
+	}
+	
+	mountain = {
+		x_pos: 110,
+		size: 50,
+	}
+
+	cloud = {
+		x_pos: 200,
+		y_pos: 140,
+		size: 20
 	}
 }
 
-function mainBody(posX, posY) {
+function resize(percentage, val) {
+	return (percentage*val)/100;
+}
+
+function resizeYPinned(percentage, val, posY = 432) {
+	let offset = resize(percentage,posY)-posY;
+	return (percentage*val)/100-offset;
+}
+
+function drawMountain(posX, sizePercentage) {
+	fill(100, 120, 200);
+	beginShape()
+	vertex(posX,resizeYPinned(sizePercentage,432));
+	vertex(posX+resize(sizePercentage,200),resizeYPinned(sizePercentage, 256));
+	vertex(posX+resize(sizePercentage,280),resizeYPinned(sizePercentage, 300));
+	vertex(posX+resize(sizePercentage,380),resizeYPinned(sizePercentage, 210));
+	vertex(posX+resize(sizePercentage,724),resizeYPinned(sizePercentage,432));
+	endShape(CLOSE);
+}
+
+function drawCloud(posX, posY, sizePercentage) {
+	fill(255,230,230);
+	ellipse(posX,posY,resize(sizePercentage, 190),resize(sizePercentage, 180));
+	ellipse(posX- resize(sizePercentage,60),posY+resize(sizePercentage,40),resize(sizePercentage, 190),resize(sizePercentage, 160));
+	rect(posX- resize(sizePercentage,110),posY+resize(sizePercentage,10),resize(sizePercentage, 250),resize(sizePercentage, 110), 10,60)
+}
+
+function drawBody(posX, posY) {
 	fill(colorFur);
 	rect(posX-15, posY-66,30,46,20);
 }
@@ -70,15 +114,30 @@ function drawMouthFront(posX, posY) {
 	noStroke();
 	ellipse(posX,posY-48,6,4) //nose
 }
+
+function drawJakeFront(posX,posY) {
+	drawBody(posX, posY);
+	drawFoot(posX,posY,12);
+	drawFoot(posX,posY,-12);
+	strokeWeight(5);
+  	stroke(colorFur);
+	noFill();
+	arc(posX, posY-30, 40,50,PI,PI*2); //arms
+	arc(posX, posY-2, 20,70,PI, PI*2); //legs
+	drawEye(posX,posY,-8);
+	drawEye(posX,posY,8);
+	drawMouthFront(posX,posY);
+}
+
 function drawCanyon (posX, w) {
 	fill(70,30,0);
-	rect(posX+20,432,90,144);
+	rect(posX+20,432,w,144);
 	fill(colorGreen.rgb);
-	quad(posX,432,posX+130,432,posX+110,462,posX+20,462)
+	quad(posX,432,posX+(w+40),432,posX+(w+20),462,posX+20,462)
 
 }
-function treeA (rootPosX, rootPosY) {
-	rootPosY = rootPosY+46;
+function drawTree (posX, posY) {
+	posY = posY+40;
 	const leafColor = colorGreen.rgb;
 	const leafColorDark = color(colorGreen.lr-10, colorGreen.lg-10, colorGreen.lb-10);
 	const leafBranchColor = color(colorGreen.lr, colorGreen.lg+100, colorGreen.lb+20);
@@ -87,32 +146,52 @@ function treeA (rootPosX, rootPosY) {
 
 	//mainLeafBack
 	fill(leafColorDark);
-	rect(rootPosX-30,rootPosY-160,100,250, 50,50,0);
+	rect(posX-30,posY-160,100,250, 50,50,0);
 	//trunk
 	fill(barkColor);
-	rect(rootPosX,rootPosY,40,105, 10);
+	rect(posX,posY,40,105, 2);
 	//mainLeafFront
 	fill(leafColor);
-	rect(rootPosX-50,rootPosY-260,140,300,70,70,0);
-	rect(rootPosX-10,rootPosY-220,40,300);
-	rect(rootPosX+50,rootPosY-110,40,200);
+	rect(posX-50,posY-260,140,300,70,70,0);
+	rect(posX-10,posY-220,40,300);
+	rect(posX+50,posY-110,40,200);
 	fill(leafColorDark)
-	triangle(rootPosX+55, rootPosY+90,rootPosX+45, rootPosY+90, rootPosX+50, rootPosY-180)
+	triangle(posX+55, posY+90,posX+45, posY+90, posX+50, posY-180)
 	//secondLeafBack
 	fill(leafBranchColorDark);
-	rect(rootPosX-40,rootPosY-40,20,110)
+	rect(posX-40,posY-40,20,110)
 	//branch
 	noFill();
 	stroke(barkColor);
 	strokeCap(SQUARE);
 	strokeWeight(20);
-	arc(rootPosX-10, rootPosY, 80, 60, HALF_PI, PI);
+	arc(posX-10, posY, 80, 60, HALF_PI, PI);
 	//secondLeafFront
 	fill(leafBranchColor);
 	noStroke();
-	rect(rootPosX-70,rootPosY-70,50,30,50,50,0);
-	rect(rootPosX-70,rootPosY-40,40,136);
-	triangle(rootPosX-20,rootPosY-40,rootPosX-40,rootPosY-40,rootPosX-30,rootPosY+30);
+	rect(posX-70,posY-70,50,30,50,50,0);
+	rect(posX-70,posY-40,40,136);
+	triangle(posX-20,posY-40,posX-40,posY-40,posX-30,posY+30);
+}
+
+function drawCoin(posX, posY, size) {
+	posY = posY - size/2;
+	posX = posX - (size-30)/2
+	fill(225,160,0);
+	rect(posX, posY,size-20,size,200);
+	fill(225,210,0);
+	rect(posX-6, posY,size-20,size,200);
+	stroke(225,180,0);
+	strokeWeight(3)
+	rect(posX-1,posY+5,size-30,size-10,200)
+}
+
+function drawOriginCrosshair(posX, posY) {
+	stroke('red');
+	strokeWeight(2)
+	rect(posX,posY-50,-1,100)
+	rect(posX-50,posY,100,1)
+	noStroke();
 }
 
 function draw()
@@ -121,27 +200,32 @@ function draw()
 
 	noStroke();
 	fill(0, 155, 0);
-	rect(0, floorPos_y, height, width - floorPos_y); //draw some green ground
+	rect(0, floorPos_y, width, height - floorPos_y); //draw some green ground
 
-	//char
-	mainBody(gameChar_x, gameChar_y);
-	drawFoot(gameChar_x,gameChar_y,12);
-	drawFoot(gameChar_x,gameChar_y,-12);
-	strokeWeight(5);
-  	stroke(colorFur);
-	noFill();
-	arc(gameChar_x, gameChar_y-30, 40,50,PI,PI*2); //arms
-	arc(gameChar_x, gameChar_y-2, 20,70,PI, PI*2); //legs
-	drawEye(gameChar_x,gameChar_y,-8);
-	drawEye(gameChar_x,gameChar_y,8);
-	drawMouthFront(gameChar_x,gameChar_y);
+	//mountain 
+	drawMountain(mountain.x_pos, mountain.size);
+	drawOriginCrosshair(mountain.x_pos, 432);
 
+	//cloud
+	drawCloud(cloud.x_pos,cloud.y_pos,cloud.size);
+	drawOriginCrosshair(cloud.x_pos,cloud.y_pos);
+	
 	//tree
-	treeA(treePos_x, treePos_y);
+	drawTree(treePos_x, treePos_y);
+	drawOriginCrosshair(treePos_x, treePos_y);
 
 	//canyon
-	drawCanyon(canyon.x_pos);
+	drawCanyon(canyon.x_pos, canyon.width);
+	drawOriginCrosshair(canyon.x_pos,432);
 
+	//char
+	drawJakeFront(gameChar_x, gameChar_y);
+	drawOriginCrosshair(gameChar_x, gameChar_y);
+	
+	//collectable
+	drawCoin(collectable.x_pos,collectable.y_pos,collectable.size);
+	drawOriginCrosshair(collectable.x_pos,collectable.y_pos);
+	
 }
 
 function mousePressed()
