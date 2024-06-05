@@ -16,6 +16,13 @@ let isRight = false;
 let isFalling = false;
 let isPlummeting = false;
 
+let collectable = {
+	x_pos: 400,
+	y_pos: 400,
+	size: 50, 
+	isFound: false
+}
+
 const colorFur = '#F5BB12';
 const colorFurLight = '#f5CD3D';
 
@@ -58,6 +65,19 @@ function drawFootVertical(posX, posY, adjX, adjY = 2) {
 	ellipse(posX + adjX, posY - adjY, 6, 10) //foot
 }
 
+function drawCoin(posX, posY, size = 50) {
+    posY = posY - size / 2;
+    posX = posX - (size - 30) / 2
+	noStroke();
+    fill(225, 160, 0);
+    rect(posX, posY, size - 20, size, 200);
+    fill(225, 210, 0);
+    rect(posX - 6, posY, size - 20, size, 200);
+    stroke(225, 180, 0);
+    strokeWeight(3)
+    rect(posX - 1, posY + 5, size - 30, size - 10, 200)
+}
+
 function setup() {
 	createCanvas(1024, 576);
 	floorPos_y = height * 3 / 4;
@@ -78,13 +98,6 @@ function draw() {
 	//draw the canyon
 	fill(70, 30, 0);
 	rect(120, 432, 110, 144);
-	
-	if (gameChar_y < floorPos_y) {
-		isFalling = true;
-		gameChar_y += 1;
-	} else {
-		isFalling = false;
-	}
 
 	//the game character
 	if (isLeft && isFalling) {
@@ -128,7 +141,6 @@ function draw() {
 		drawEye(gameChar_x, gameChar_y, 11, 2);
 	}
 	else if (isLeft) {
-		gameChar_x -= 1;
 		strokeWeight(5);
 		stroke(colorFur);
 		noFill();
@@ -148,7 +160,6 @@ function draw() {
 		drawEye(gameChar_x, gameChar_y, -11, 2);
 	}
 	else if (isRight) {
-		gameChar_x += 1;
 		strokeWeight(5);
 		stroke(colorFur);
 		noFill();
@@ -196,10 +207,33 @@ function draw() {
 		drawMouthFront(gameChar_x, gameChar_y);
 	}
 
+	if (!collectable.isFound) {
+		drawCoin(collectable.x_pos, collectable.y_pos, collectable.size);
+	}
+
+	if (dist(collectable.x_pos, collectable.y_pos, gameChar_x,gameChar_y) < 45) {
+		
+		collectable.size += 5;
+		if (collectable.size > 60) {
+			collectable.isFound = true;
+		}
+	} 
+	
+
 	///////////INTERACTION CODE//////////
 	//Put conditional statements to move the game character below here
-	circle(mouseX, mouseY, 20);
-
+	if (isRight) {
+		gameChar_x += 1;
+	}
+	if (isLeft) {
+		gameChar_x -= 1;
+	}
+	if (gameChar_y < floorPos_y) {
+		isFalling = true;
+		gameChar_y += 1;
+	} else {
+		isFalling = false;
+	}
 }
 
 
