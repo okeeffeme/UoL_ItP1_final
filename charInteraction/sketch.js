@@ -24,6 +24,11 @@ let collectable = {
 	isFound: false
 }
 
+let canyon = {
+	x_pos: 120,
+	size: 100
+}
+
 const colorFur = '#F5BB12';
 const colorFurLight = '#f5CD3D';
 
@@ -86,6 +91,10 @@ function setup() {
 	gameChar_y = floorPos_y;
 }
 
+function isOverCanyon() {
+	return gameChar_x > canyon.x_pos+10 && gameChar_x < canyon.x_pos+(canyon.size- 10) ;
+}
+
 function draw() {
 	///////////DRAWING CODE//////////
 
@@ -98,7 +107,7 @@ function draw() {
 
 	//draw the canyon
 	fill(70, 30, 0);
-	rect(120, 432, 110, 144);
+	rect(canyon.x_pos, 432, canyon.size, 144);
 
 	//the game character
 	if (isLeft && isFalling) {
@@ -219,8 +228,6 @@ function draw() {
 			collectable.isFound = true;
 		}
 	} 
-	console.log(gameChar_y);
-
 
 	///////////INTERACTION CODE//////////
 	//Put conditional statements to move the game character below here
@@ -236,11 +243,25 @@ function draw() {
 			isJumping = false;
 		}
 	}
-	if (gameChar_y < floorPos_y && !isJumping) {
+	if (isOverCanyon() && gameChar_y >= floorPos_y && !isFalling) { //plummeting
+		// isLeft = false;
+		// isRight = false;
+		isPlummeting = true;
+		gameChar_y += 8;
+	} else {
+		isPlummeting = false;
+	}
+	if (gameChar_y < floorPos_y && !isJumping) { //falling
 		isFalling = true;
 		gameChar_y += 4;
 	} else {
 		isFalling = false;
+	}
+	if (gameChar_y > height+200) {
+		isFalling = false;
+		isPlummeting = false;
+		gameChar_y = floorPos_y;
+		gameChar_x = width / 2;
 	}
 }
 
@@ -254,13 +275,19 @@ function keyPressed() {
 	if (key === 'd' || keyCode === 68) {
 		isRight = true;
 	}
-	if (key === 'w' && isFalling === false) {
+	if (key === 'w' && !isFalling && !isPlummeting) {
 		isJumping = true;
 	}
 
 	//open up the console to see how these work
-	console.log("keyPressed key: " + key + " keyPressed keyCode: " + keyCode);
-	console.log('isLeft ' + isLeft + ' isRight ' + isRight);
+	let consoleCheck = [
+		{k: 'KeyPressed', v: key},
+		{k: 'isLeft', v: isLeft},
+		{k: 'isRight', v: isRight},
+		{k: 'isFalling', v: isFalling},
+		{k: 'isPlummeting', v: isPlummeting},
+	]
+	console.table(consoleCheck);
 }
 
 function keyReleased() {
@@ -277,7 +304,15 @@ function keyReleased() {
 	// 	gameChar_y += 100;
 	// }
 
-	console.log("keyReleased: " + key + " keyReleased: " + keyCode);
-	console.log('isLeft ' + isLeft + ' isRight ' + isRight);
+	// console.log("keyReleased: " + key + " keyReleased: " + keyCode);
+	// console.log('isLeft ' + isLeft + ' isRight ' + isRight);
+	let consoleCheck = [
+		{k: 'KeyReleased', v: key},
+		{k: 'isLeft', v: isLeft},
+		{k: 'isRight', v: isRight},
+		{k: 'isFalling', v: isFalling},
+		{k: 'isPlummeting', v: isPlummeting},
+	]
+	console.table(consoleCheck);
 
 }
