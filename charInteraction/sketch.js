@@ -13,6 +13,7 @@ let floorPos_y;
 
 let isLeft = false;
 let isRight = false;
+let isJumping = false;
 let isFalling = false;
 let isPlummeting = false;
 
@@ -218,19 +219,26 @@ function draw() {
 			collectable.isFound = true;
 		}
 	} 
-	
+	console.log(gameChar_y);
+
 
 	///////////INTERACTION CODE//////////
 	//Put conditional statements to move the game character below here
 	if (isRight) {
-		gameChar_x += 1;
+		gameChar_x += 2;
 	}
 	if (isLeft) {
-		gameChar_x -= 1;
+		gameChar_x -= 2;
 	}
-	if (gameChar_y < floorPos_y) {
+	if (isJumping) {
+		gameChar_y -= 8;
+		if(gameChar_y < floorPos_y-120) {
+			isJumping = false;
+		}
+	}
+	if (gameChar_y < floorPos_y && !isJumping) {
 		isFalling = true;
-		gameChar_y += 1;
+		gameChar_y += 4;
 	} else {
 		isFalling = false;
 	}
@@ -247,7 +255,7 @@ function keyPressed() {
 		isRight = true;
 	}
 	if (key === 'w' && isFalling === false) {
-		gameChar_y -= 100;
+		isJumping = true;
 	}
 
 	//open up the console to see how these work
