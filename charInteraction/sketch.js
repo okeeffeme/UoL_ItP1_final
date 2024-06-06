@@ -222,7 +222,6 @@ function draw() {
 	}
 
 	if (dist(collectable.x_pos, collectable.y_pos, gameChar_x,gameChar_y) < 45) {
-		
 		collectable.size += 5;
 		if (collectable.size > 60) {
 			collectable.isFound = true;
@@ -243,21 +242,21 @@ function draw() {
 			isJumping = false;
 		}
 	}
-	if (isOverCanyon() && gameChar_y >= floorPos_y && !isFalling) { //plummeting
-		// isLeft = false;
-		// isRight = false;
-		isPlummeting = true;
-		gameChar_y += 8;
-	} else {
-		isPlummeting = false;
-	}
 	if (gameChar_y < floorPos_y && !isJumping) { //falling
 		isFalling = true;
 		gameChar_y += 4;
 	} else {
 		isFalling = false;
 	}
-	if (gameChar_y > height+200) {
+	if (isOverCanyon() && gameChar_y >= floorPos_y && !isFalling) { //plummeting
+		isLeft = false;
+		isRight = false;
+		isPlummeting = true;
+		gameChar_y += 8;
+	} else {
+		isPlummeting = false;
+	}
+	if (gameChar_y > height+400) { //reset
 		isFalling = false;
 		isPlummeting = false;
 		gameChar_y = floorPos_y;
