@@ -77,6 +77,7 @@ function drawFootVertical(posX, posY, adjX, adjY = 2) {
 
 
 function drawJakeFront(posX, posY) {
+    strokeCap(ROUND);
     drawBody(posX, posY);
     drawFoot(posX, posY, 12);
     drawFoot(posX, posY, -12);
@@ -91,6 +92,7 @@ function drawJakeFront(posX, posY) {
 }
 
 function drawJakeFrontJumping(posX, posY) {
+    strokeCap(ROUND);
     drawBody(posX, posY);
     drawFoot(posX, posY, 12, 8);
     drawFoot(posX, posY, -12, 8);
@@ -106,6 +108,7 @@ function drawJakeFrontJumping(posX, posY) {
 }
 
 function drawJakeWalkingLeft(posX, posY) {
+    strokeCap(ROUND);
     strokeWeight(5);
     stroke(colorFur);
     noFill();
@@ -126,6 +129,7 @@ function drawJakeWalkingLeft(posX, posY) {
 }
 
 function drawJakeWalkingRight(posX, posY) {
+    strokeCap(ROUND);
     strokeWeight(5);
     stroke(colorFur);
     noFill();
@@ -146,6 +150,7 @@ function drawJakeWalkingRight(posX, posY) {
 }
 
 function drawJakeJumpingLeft(posX, posY) {
+    strokeCap(ROUND);
     strokeWeight(5);
     stroke(colorFur);
     noFill()
@@ -168,6 +173,7 @@ function drawJakeJumpingLeft(posX, posY) {
 }
 
 function drawJakeJumpingRight(posX, posY) {
+    strokeCap(ROUND);
     strokeWeight(5);
     stroke(colorFur);
     noFill();
@@ -194,8 +200,8 @@ function drawCanyon(posX, w) {
     rect(posX, 432, w, 144);
 }
 
-function drawTree(posX, posY) {
-    posY = posY + 40;
+function drawTree(posX, posY = 432) {
+    posY = posY - 100;
     const leafColor = colorGreen.rgb;
     const leafColorDark = color(colorGreen.lr - 10, colorGreen.lg - 10, colorGreen.lb - 10);
     const leafBranchColor = color(colorGreen.lr, colorGreen.lg + 100, colorGreen.lb + 20);
