@@ -10,6 +10,9 @@ Scrolling
 let gameChar_x;
 let gameChar_y;
 let floorPos_y;
+let initPos;
+
+let cameraPosX;
 
 let isLeft;
 let isRight;
@@ -25,14 +28,24 @@ let trees;
 
 
 function isOverCanyon() {
-	return gameChar_x > canyon.x_pos + 10 && gameChar_x < canyon.x_pos + (canyon.size - 10);
+	return gameChar_x > canyons.x_pos + 10 && gameChar_x < canyons.x_pos + (canyons.size - 10);
+}
+
+function getCameraOffset() {
+	if (gameChar_x - initPos >= 0) {
+		return gameChar_x - initPos;
+	}
+	return 0;
 }
 
 function setup() {
 	createCanvas(1024, 576);
+	initPos = width / 2;
 	floorPos_y = height * 3 / 4;
-	gameChar_x = width / 2;
+	gameChar_x = initPos;
 	gameChar_y = floorPos_y;
+
+	cameraPosX = 0;
 
 	isLeft = false;
 	isRight = false;
@@ -41,46 +54,64 @@ function setup() {
 	isPlummeting = false;
 
 	trees = [
-		100, 400, 600, 800
+		23, 421, 732, 962, 1231
 	]
 
 	clouds = [{
 		x_pos: 200,
 		y_pos: 140,
-		size: 20
+		size: random(10,60)
 	},
 	{
 		x_pos: 300,
-		y_pos: 100,
-		size: 50
+		y_pos: 60,
+		size: random(10,60)
 	},
 	{
 		x_pos: 600,
 		y_pos: 40,
-		size: 60
+		size: random(10,60)
+	},
+	{
+		x_pos: 800,
+		y_pos: 80,
+		size: random(10,60)
+	},
+	{
+		x_pos: 1100,
+		y_pos: 60,
+		size: random(10,60)
 	}]
 
 	mountains = [{
-		x_pos: 200,
-		size: 20
+		x_pos: 20,
+		size: random(20,60)
 	},
 	{
-		x_pos: 300,
-		size: 50
+		x_pos: 200,
+		size: random(20,60)
 	},
 	{
 		x_pos: 600,
-		size: 60
+		size: random(20,60)
+	},
+	{
+		x_pos: 800,
+		size: random(20,60)
+	},
+	{
+		x_pos: 1100,
+		size: random(20,60)
 	}]
 
 	collectable = {
-		x_pos: 400,
-		y_pos: 400,
+		x_pos: 800,
+		y_pos: 300,
 		size: 50,
 		isFound: false
 	}
 
-	canyon = {
+	canyons = {
 		x_pos: 120,
 		size: 100
 	}
@@ -88,6 +119,7 @@ function setup() {
 }
 
 function draw() {
+	cameraPosX = getCameraOffset();
 	///////////DRAWING CODE//////////
 
 	background(100, 155, 255); //fill the sky blue
@@ -96,22 +128,33 @@ function draw() {
 	noStroke();
 	fill(0, 155, 0);
 	rect(0, floorPos_y, width, height - floorPos_y); //draw some green ground
+
+	push();
+	translate(-cameraPosX, 0);
+
 	//draw mountains
 	for (let i = 0; i < mountains.length; i++) {
 		drawMountain(mountains[i].x_pos, mountains[i].size);
-	}
-	//draw trees
-	for (let i = 0; i < trees.length; i++) {
-		drawTree(trees[i], floorPos_y);
 	}
 	//draw clouds
 	for (let i = 0; i < clouds.length; i++) {
 		drawCloud(clouds[i].x_pos, clouds[i].y_pos, clouds[i].size);
 	}
+	//draw trees
+	for (let i = 0; i < trees.length; i++) {
+ 		if (trees[i]%3 == 1) {
+			drawTree2(trees[i], floorPos_y);
+		} else if(trees[i]%3 == 2) {
+			drawTree3(trees[i], floorPos_y);
+		} else {
+			drawTree1(trees[i]);
+		}
+	}
+	
 
 
 	//draw the canyon
-	drawCanyon(canyon.x_pos, canyon.size);
+	drawCanyon(canyons.x_pos, canyons.size);
 
 	//the game character
 	if (isLeft && isFalling) {
@@ -132,11 +175,13 @@ function draw() {
 	else {
 		drawJakeFront(gameChar_x, gameChar_y);
 	}
-
 	//draw collectable
 	if (!collectable.isFound) {
 		drawCoin(collectable.x_pos, collectable.y_pos, collectable.size);
 	}
+	pop();
+
+
 
 	//gather collectable
 	if (dist(collectable.x_pos, collectable.y_pos, gameChar_x, gameChar_y) < 45) {

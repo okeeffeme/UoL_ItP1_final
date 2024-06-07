@@ -7,6 +7,13 @@ const colorGreen = {
     rgb: [10, 80, 60]
 };
 
+const colorPink = {
+    lr: 229,
+    lg: 133,
+    lb: 216,
+    rgb: [229, 133, 216]
+}
+
 function resize(percentage, val) {
     return (percentage * val) / 100;
 }
@@ -59,20 +66,20 @@ function drawMouthFront(posX, posY) {
 }
 
 function drawMouthSide(posX, posY, adjX = -20) {
-	fill(colorFurLight);
-	rect(posX + adjX, posY - 50, 8, 10, 20);
+    fill(colorFurLight);
+    rect(posX + adjX, posY - 50, 8, 10, 20);
 }
 
 function drawEarSide(posX, posY, adjX = 6) {
-	strokeWeight(1.6);
-	fill(colorFur);
-	stroke('#a67712');
-	arc(posX + adjX, posY - 54, 10, 10, 0, PI); //ear
+    strokeWeight(1.6);
+    fill(colorFur);
+    stroke('#a67712');
+    arc(posX + adjX, posY - 54, 10, 10, 0, PI); //ear
 }
 
 function drawFootVertical(posX, posY, adjX, adjY = 2) {
-	fill(colorFur);
-	ellipse(posX + adjX, posY - adjY, 6, 10) //foot
+    fill(colorFur);
+    ellipse(posX + adjX, posY - adjY, 6, 10) //foot
 }
 
 
@@ -200,8 +207,8 @@ function drawCanyon(posX, w) {
     rect(posX, 432, w, 144);
 }
 
-function drawTree(posX, posY = 432) {
-    posY = posY - 100;
+function drawTree1(posX, posY = 432) {
+    posY = posY - 105;
     const leafColor = colorGreen.rgb;
     const leafColorDark = color(colorGreen.lr - 10, colorGreen.lg - 10, colorGreen.lb - 10);
     const leafBranchColor = color(colorGreen.lr, colorGreen.lg + 100, colorGreen.lb + 20);
@@ -236,6 +243,64 @@ function drawTree(posX, posY = 432) {
     rect(posX - 70, posY - 70, 50, 30, 50, 50, 0);
     rect(posX - 70, posY - 40, 40, 136);
     triangle(posX - 20, posY - 40, posX - 40, posY - 40, posX - 30, posY + 30);
+}
+
+function drawTree2(posX, posY = 432, tColor = colorPink) {
+    posY = posY - 100;
+    const leafColor = tColor.rgb;
+    const leafColorDark = color(tColor.lr - 10, tColor.lg - 10, tColor.lb - 10);
+    const leafBranchColor = color(tColor.lr, tColor.lg + 100, tColor.lb + 20);
+    const leafBranchColorDark = color(tColor.lr, tColor.lg + 80, tColor.lb + 20);
+    const barkColor = '#ddcfc8';
+
+    //trunk
+    fill(barkColor);
+    rect(posX, posY - 100, 20, 200, 2);
+    //mainLeafBack
+    fill(leafColorDark);
+    rect(posX - 60, posY - 160, 140, 110, 70);
+    //mainLeafFront
+    fill(leafColor);
+    rect(posX - 60, posY - 160, 140, 100, 70);
+    //secondLeafBack
+    fill(leafBranchColorDark);
+    rect(posX - 70, posY - 50, 60, 50, 70);
+    //branch
+    noFill();
+    stroke(barkColor);
+    strokeCap(SQUARE);
+    strokeWeight(14);
+    arc(posX, posY, 80, 60, HALF_PI, PI);
+    //secondLeafFront
+    fill(leafBranchColor);
+    noStroke();
+    rect(posX - 70, posY - 50, 60, 40, 70);
+}
+
+function drawTree3(posX, posY = 432, tColor = colorGreen) {
+    posY = posY - 100;
+    const leafColor = tColor.rgb;
+    const leafColorDark = color(tColor.lr - 10, tColor.lg - 10, tColor.lb - 10);
+    const leafBranchColor = color(tColor.lr, tColor.lg + 100, tColor.lb + 20);
+    const leafBranchColorDark = color(tColor.lr, tColor.lg + 80, tColor.lb + 20);
+    const barkColor = '#ddcfc8';
+
+    //trunk
+    fill(barkColor);
+    rect(posX, posY - 100, 20, 200, 2);
+    //mainLeafBack
+    fill(leafColorDark);
+    rect(posX - 60, posY - 50, 140, 110, 70);
+    //mainLeafFront
+    fill(leafColor);
+    rect(posX - 60, posY - 54, 140, 100, 70);
+    //secondLeafBack
+    fill(leafBranchColorDark);
+    rect(posX - 40, posY - 160, 100, 80, 70);
+
+    //secondLeafFront
+    fill(leafBranchColor);
+    rect(posX - 40, posY - 170, 100, 80, 70);
 }
 
 function drawCoin(posX, posY, size) {
