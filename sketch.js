@@ -240,16 +240,6 @@ function keyPressed() {
 	if (key === 'w' && !isFalling && !isPlummeting) {
 		isJumping = true;
 	}
-
-	//open up the console to see how these work
-	let consoleCheck = [
-		{ k: 'keyCode', v: keyCode },
-		{ k: 'isLeft', v: isLeft },
-		{ k: 'isRight', v: isRight },
-		{ k: 'isFalling', v: isFalling },
-		{ k: 'isPlummeting', v: isPlummeting },
-	]
-	console.table(consoleCheck);
 }
 
 function keyReleased() {
@@ -262,14 +252,4 @@ function keyReleased() {
 	if (key === 'd' || keyCode === 68) {
 		isRight = false;
 	}
-
-	let consoleCheck = [
-		{ k: 'KeyReleased', v: key },
-		{ k: 'isLeft', v: isLeft },
-		{ k: 'isRight', v: isRight },
-		{ k: 'isFalling', v: isFalling },
-		{ k: 'isPlummeting', v: isPlummeting },
-	]
-	console.table(consoleCheck);
-
 }
