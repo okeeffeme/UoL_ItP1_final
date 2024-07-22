@@ -20,7 +20,7 @@ let isJumping;
 let isFalling;
 let isPlummeting;
 
-let canyons;
+let canyon;
 let clouds;
 let collectables;
 let mountains;
@@ -28,7 +28,15 @@ let trees;
 
 
 function isOverCanyon() {
-	return gameChar_x > canyons.x_pos + 10 && gameChar_x < canyons.x_pos + (canyons.size - 10);
+	let o = false;
+	for (let i = 0; i < allCanyons.length; i++) {
+		console.log('canyoncheckInner', o)
+		if(gameChar_x > allCanyons[i].posX + 10 && gameChar_x < allCanyons[i].posX + (allCanyons[i].size - 10)){
+			o = true;
+			break;
+		}
+	}
+	return o;
 }
 
 function getCameraOffset() {
@@ -39,30 +47,55 @@ function getCameraOffset() {
 }
 //draw mountains
 function drawMountains() {
-	for (let i = 0; i < mountains.length; i++) {
-		drawMountain(mountains[i].x_pos, mountains[i].size);
+	for (let i = 0; i < allMountains.length; i++) {
+		drawMountain(allMountains[i].posX, allMountains[i].size);
 	}
 }
 
 //draw clouds
 function drawClouds() {
-	for (let i = 0; i < clouds.length; i++) {
-		drawCloud(clouds[i].x_pos, clouds[i].y_pos, clouds[i].size);
+	for (let i = 0; i < allClouds.length; i++) {
+		drawCloud(allClouds[i].posX, allClouds[i].posY, allClouds[i].size);
 	}
 }
 
 //draw trees
 function drawTrees() {
-	for (let i = 0; i < trees.length; i++) {
-		if (trees[i] % 3 == 1) {
-			drawTree2(trees[i], floorPos_y);
-		} else if (trees[i] % 3 == 2) {
-			drawTree3(trees[i], floorPos_y);
+	for (let i = 0; i < allTrees.length; i++) {
+		if (allTrees[i] % 3 == 1) {
+			drawTree2(allTrees[i], floorPos_y);
+		} else if (allTrees[i] % 3 == 2) {
+			drawTree3(allTrees[i], floorPos_y);
 		} else {
-			drawTree1(trees[i]);
+			drawTree1(allTrees[i]);
 		}
 	}
 }
+
+//draw canyons
+function drawCanyons() {
+	for (let i = 0; i < allCanyons.length; i++) {
+		drawCanyon(allCanyons[i]);
+	}
+}
+
+function checkCollectable(item) {
+	if (!item.isFound) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+//draw collectable
+function drawCollectable(allCollectables) {
+	for (let i = 0; i < allCollectables.length; i++) {
+		if (checkCollectable(allCollectables[i])) {
+			drawCoin(allCollectables[i]);
+		}
+	}
+}
+
 function setup() {
 	createCanvas(1024, 576);
 	initPos = width / 2;
@@ -78,78 +111,99 @@ function setup() {
 	isFalling = false;
 	isPlummeting = false;
 
-	trees = [
+	allTrees = [
 		23, 421, 732, 962, 1231
 	]
 
-	clouds = [{
-		x_pos: 200,
-		y_pos: 140,
+	allClouds = [{
+		posX: 200,
+		posY: 140,
 		size: random(10, 60)
 	},
 	{
-		x_pos: 300,
-		y_pos: 60,
+		posX: 300,
+		posY: 60,
 		size: random(10, 60)
 	},
 	{
-		x_pos: 600,
-		y_pos: 40,
+		posX: 600,
+		posY: 40,
 		size: random(10, 60)
 	},
 	{
-		x_pos: 800,
-		y_pos: 80,
+		posX: 800,
+		posY: 80,
 		size: random(10, 60)
 	},
 	{
-		x_pos: 1100,
-		y_pos: 60,
+		posX: 1100,
+		posY: 60,
 		size: random(10, 60)
 	}]
 
-	mountains = [{
-		x_pos: 20,
+	allMountains = [{
+		posX: 20,
 		size: random(20, 60)
 	},
 	{
-		x_pos: 200,
+		posX: 200,
 		size: random(20, 60)
 	},
 	{
-		x_pos: 600,
+		posX: 600,
 		size: random(20, 60)
 	},
 	{
-		x_pos: 800,
+		posX: 800,
 		size: random(20, 60)
 	},
 	{
-		x_pos: 1100,
+		posX: 1100,
 		size: random(20, 60)
 	}]
 
-	collectable = {
-		x_pos: 800,
-		y_pos: 300,
-		size: 50,
-		isFound: false
-	}
+	allCollectables = [
+		{
+			posX: 700,
+			posY: 200,
+			size: 50,
+			isFound: false
+		},
+		{
+			posX: 600,
+			posY: 400,
+			size: 50,
+			isFound: false
+		},
+		{
+			posX: 800,
+			posY: 300,
+			size: 50,
+			isFound: false
+		},
+	]
 
-	canyons = {
-		x_pos: 120,
-		size: 100
-	}
+	allCanyons = [
+		{
+			posX: 120,
+			size: 100
+		},
+		{
+			posX: 420,
+			size: 100
+		},
+		{
+			posX: 620,
+			size: 100
+		}
+	]
 
 }
 
 function draw() {
 	cameraPosX = getCameraOffset();
 	///////////DRAWING CODE//////////
-
 	background(100, 155, 255); //fill the sky blue
-
-
 	noStroke();
 	fill(0, 155, 0);
 	rect(0, floorPos_y, width, height - floorPos_y); //draw some green ground
@@ -160,9 +214,7 @@ function draw() {
 	drawMountains();
 	drawClouds();
 	drawTrees();
-
-	//draw the canyon
-	drawCanyon(canyons.x_pos, canyons.size);
+	drawCanyons();
 
 	//the game character
 	if (isLeft && isFalling) {
@@ -183,19 +235,20 @@ function draw() {
 	else {
 		drawJakeFront(gameChar_x, gameChar_y);
 	}
-	//draw collectable
-	if (!collectable.isFound) {
-		drawCoin(collectable.x_pos, collectable.y_pos, collectable.size);
-	}
+
+	drawCollectable(allCollectables);
+
 	pop();
 
 
 
 	//gather collectable
-	if (dist(collectable.x_pos, collectable.y_pos, gameChar_x, gameChar_y) < 45) {
-		collectable.size += 5;
-		if (collectable.size > 60) {
-			collectable.isFound = true;
+	for (let i = 0; i < allCollectables.length; i++) {
+		if (dist(allCollectables[i].posX, allCollectables[i].posY, gameChar_x, gameChar_y) < 45) {
+			allCollectables[i].size += 5;
+			if (allCollectables[i].size > 60) {
+				allCollectables[i].isFound = true;
+			}
 		}
 	}
 
@@ -246,7 +299,7 @@ function keyPressed() {
 	if (key === 'd' || key === 'ArrowRight') {
 		isRight = true;
 	}
-	if (key === 'w' && notFalling || key === 'ArrowUp' && notFalling ) {
+	if (key === 'w' && notFalling || key === 'ArrowUp' && notFalling) {
 		isJumping = true;
 	}
 }

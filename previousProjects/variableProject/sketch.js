@@ -42,24 +42,24 @@ function setup()
 	treePos_y = height/2;
 
 	canyon = {
-		x_pos: 0, 
+		posX: 0, 
 		width: 144
 	}
 
 	collectable = {
-		x_pos: 100,
-		y_pos: 100,
+		posX: 100,
+		posY: 100,
 		size: 50
 	}
 	
 	mountain = {
-		x_pos: 110,
+		posX: 110,
 		size: 50,
 	}
 
 	cloud = {
-		x_pos: 200,
-		y_pos: 140,
+		posX: 200,
+		posY: 140,
 		size: 20
 	}
 }
@@ -203,28 +203,28 @@ function draw()
 	rect(0, floorPos_y, width, height - floorPos_y); //draw some green ground
 
 	//mountain 
-	drawMountain(mountain.x_pos, mountain.size);
-	drawOriginCrosshair(mountain.x_pos, 432);
+	drawMountain(mountain.posX, mountain.size);
+	drawOriginCrosshair(mountain.posX, 432);
 
 	//cloud
-	drawCloud(cloud.x_pos,cloud.y_pos,cloud.size);
-	drawOriginCrosshair(cloud.x_pos,cloud.y_pos);
+	drawCloud(cloud.posX,cloud.posY,cloud.size);
+	drawOriginCrosshair(cloud.posX,cloud.posY);
 	
 	//tree
 	drawTree(treePos_x, treePos_y);
 	drawOriginCrosshair(treePos_x, treePos_y);
 
 	//canyon
-	drawCanyon(canyon.x_pos, canyon.width);
-	drawOriginCrosshair(canyon.x_pos,432);
+	drawCanyon(canyon.posX, canyon.width);
+	drawOriginCrosshair(canyon.posX,432);
 
 	//char
 	drawJakeFront(gameChar_x, gameChar_y);
 	drawOriginCrosshair(gameChar_x, gameChar_y);
 	
 	//collectable
-	drawCoin(collectable.x_pos,collectable.y_pos,collectable.size);
-	drawOriginCrosshair(collectable.x_pos,collectable.y_pos);
+	drawCoin(collectable.posX,collectable.posY,collectable.size);
+	drawOriginCrosshair(collectable.posX,collectable.posY);
 	
 }
 

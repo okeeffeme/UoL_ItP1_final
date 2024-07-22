@@ -202,9 +202,9 @@ function drawJakeJumpingRight(posX, posY) {
     drawEye(posX, posY, 11, 2);
 }
 
-function drawCanyon(posX, w) {
+function drawCanyon(c) {
     fill(70, 30, 0);
-    rect(posX, 432, w, 144);
+    rect(c.posX, 432, c.size, 144);
 }
 
 function drawTree1(posX, posY = 432) {
@@ -303,15 +303,15 @@ function drawTree3(posX, posY = 432, tColor = colorGreen) {
     rect(posX - 40, posY - 170, 100, 80, 70);
 }
 
-function drawCoin(posX, posY, size) {
-    posY = posY - size / 2;
-    posX = posX - (size - 30) / 2
+function drawCoin(item) {
+    posY = item.posY - item.size / 2;
+    posX = item.posX - (item.size - 30) / 2
     noStroke();
     fill(225, 160, 0);
-    rect(posX, posY, size - 20, size, 200);
+    rect(posX, posY, item.size - 20, item.size, 200);
     fill(225, 210, 0);
-    rect(posX - 6, posY, size - 20, size, 200);
+    rect(posX - 6, posY, item.size - 20, item.size, 200);
     stroke(225, 180, 0);
     strokeWeight(3)
-    rect(posX - 1, posY + 5, size - 30, size - 10, 200)
+    rect(posX - 1, posY + 5, item.size - 30, item.size - 10, 200)
 }

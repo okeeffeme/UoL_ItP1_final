@@ -21,18 +21,18 @@ be essential for later stages in the game project.
 	- Make sure your tree is anchored correctly
 
 4. Canyon [2 marks]
-	- In `setup`, initialise the variable `canyon` with this object `{x_pos: 0, width: 100}`
+	- In `setup`, initialise the variable `canyon` with this object `{posX: 0, width: 100}`
 	- Copy the code for the canyon from part 1 into the draw function of this code
-	- Modify the code so that the property `x_pos` controls where the canyon is on the x-axis
+	- Modify the code so that the property `posX` controls where the canyon is on the x-axis
 	- Modify the code so that the property `width` controls how wide the canyon is
-	- Adjust `x_pos` to place the canyon where you want it. Check that it moves intact when you adjust `x_pos`
+	- Adjust `posX` to place the canyon where you want it. Check that it moves intact when you adjust `posX`
 	- Make sure your collectable item is anchored correctly about its top left hand corner
 	
 
 5. Collectable item [2 marks]
-	- In `setup`, initialise the variable `collectable` with this object `{x_pos: 100, y_pos: 100, size: 50}`
+	- In `setup`, initialise the variable `collectable` with this object `{posX: 100, y_pos: 100, size: 50}`
 	- Copy the code for the collectable item in part 1 into the draw function.
-	- As in stage 4 for adapt the code to use `x_pos`, `y_pos`, and `size` to control the positions and dimensions of the collectable item
+	- As in stage 4 for adapt the code to use `posX`, `y_pos`, and `size` to control the positions and dimensions of the collectable item
 	- Make sure that the collectable item appears infront of everything but the game character.
 	- Make sure your collectable item is anchored correctly about its center
 

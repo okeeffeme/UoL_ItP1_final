@@ -36,7 +36,7 @@ It's time to level up our game by making multiple interactable items to populate
 
 6. Create multiple collectables [3 marks]
 	- Create a global variable called `collectables` and initialise it to an array
-	- Fill the array with lots of collectable objects. You can copy and paste from your original collectable object but be sure to alter the x_pos property so that the collectables appear in different places in your game world.
+	- Fill the array with lots of collectable objects. You can copy and paste from your original collectable object but be sure to alter the posX property so that the collectables appear in different places in your game world.
 	- In the `draw` function, wrap the calls to `drawCollectable` and `checkCollectable` in a for loop which traverses collectables
 	- Instead of passing `collectable` to your functions pass a reference to the particular collectable in your `collectables` array (eg. `drawCollectable(collectables[i])`).
 	- Once you've done this delete the declaration and initialisation of your old single `collectable` . It's now redundant code.

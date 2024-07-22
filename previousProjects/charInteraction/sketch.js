@@ -18,14 +18,14 @@ let isFalling = false;
 let isPlummeting = false;
 
 let collectable = {
-	x_pos: 400,
-	y_pos: 400,
+	posX: 400,
+	posY: 400,
 	size: 50, 
 	isFound: false
 }
 
 let canyon = {
-	x_pos: 120,
+	posX: 120,
 	size: 100
 }
 
@@ -37,7 +37,7 @@ function setup() {
 }
 
 function isOverCanyon() {
-	return gameChar_x > canyon.x_pos+10 && gameChar_x < canyon.x_pos+(canyon.size- 10) ;
+	return gameChar_x > canyon.posX+10 && gameChar_x < canyon.posX+(canyon.size- 10) ;
 }
 
 function draw() {
@@ -51,7 +51,7 @@ function draw() {
 	rect(0, floorPos_y, width, height - floorPos_y); //draw some green ground
 
 	//draw the canyon
-	drawCanyon(canyon.x_pos, canyon.size);
+	drawCanyon(canyon.posX, canyon.size);
 
 	//the game character
 	if (isLeft && isFalling) {
@@ -74,10 +74,10 @@ function draw() {
 	}
 
 	if (!collectable.isFound) {
-		drawCoin(collectable.x_pos, collectable.y_pos, collectable.size);
+		drawCoin(collectable.posX, collectable.posY, collectable.size);
 	}
 
-	if (dist(collectable.x_pos, collectable.y_pos, gameChar_x,gameChar_y) < 45) {
+	if (dist(collectable.posX, collectable.posY, gameChar_x,gameChar_y) < 45) {
 		collectable.size += 5;
 		if (collectable.size > 60) {
 			collectable.isFound = true;
