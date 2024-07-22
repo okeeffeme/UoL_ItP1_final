@@ -37,7 +37,32 @@ function getCameraOffset() {
 	}
 	return 0;
 }
+//draw mountains
+function drawMountains() {
+	for (let i = 0; i < mountains.length; i++) {
+		drawMountain(mountains[i].x_pos, mountains[i].size);
+	}
+}
 
+//draw clouds
+function drawClouds() {
+	for (let i = 0; i < clouds.length; i++) {
+		drawCloud(clouds[i].x_pos, clouds[i].y_pos, clouds[i].size);
+	}
+}
+
+//draw trees
+function drawTrees() {
+	for (let i = 0; i < trees.length; i++) {
+		if (trees[i] % 3 == 1) {
+			drawTree2(trees[i], floorPos_y);
+		} else if (trees[i] % 3 == 2) {
+			drawTree3(trees[i], floorPos_y);
+		} else {
+			drawTree1(trees[i]);
+		}
+	}
+}
 function setup() {
 	createCanvas(1024, 576);
 	initPos = width / 2;
@@ -60,48 +85,48 @@ function setup() {
 	clouds = [{
 		x_pos: 200,
 		y_pos: 140,
-		size: random(10,60)
+		size: random(10, 60)
 	},
 	{
 		x_pos: 300,
 		y_pos: 60,
-		size: random(10,60)
+		size: random(10, 60)
 	},
 	{
 		x_pos: 600,
 		y_pos: 40,
-		size: random(10,60)
+		size: random(10, 60)
 	},
 	{
 		x_pos: 800,
 		y_pos: 80,
-		size: random(10,60)
+		size: random(10, 60)
 	},
 	{
 		x_pos: 1100,
 		y_pos: 60,
-		size: random(10,60)
+		size: random(10, 60)
 	}]
 
 	mountains = [{
 		x_pos: 20,
-		size: random(20,60)
+		size: random(20, 60)
 	},
 	{
 		x_pos: 200,
-		size: random(20,60)
+		size: random(20, 60)
 	},
 	{
 		x_pos: 600,
-		size: random(20,60)
+		size: random(20, 60)
 	},
 	{
 		x_pos: 800,
-		size: random(20,60)
+		size: random(20, 60)
 	},
 	{
 		x_pos: 1100,
-		size: random(20,60)
+		size: random(20, 60)
 	}]
 
 	collectable = {
@@ -132,26 +157,9 @@ function draw() {
 	push();
 	translate(-cameraPosX, 0);
 
-	//draw mountains
-	for (let i = 0; i < mountains.length; i++) {
-		drawMountain(mountains[i].x_pos, mountains[i].size);
-	}
-	//draw clouds
-	for (let i = 0; i < clouds.length; i++) {
-		drawCloud(clouds[i].x_pos, clouds[i].y_pos, clouds[i].size);
-	}
-	//draw trees
-	for (let i = 0; i < trees.length; i++) {
- 		if (trees[i]%3 == 1) {
-			drawTree2(trees[i], floorPos_y);
-		} else if(trees[i]%3 == 2) {
-			drawTree3(trees[i], floorPos_y);
-		} else {
-			drawTree1(trees[i]);
-		}
-	}
-	
-
+	drawMountains();
+	drawClouds();
+	drawTrees();
 
 	//draw the canyon
 	drawCanyon(canyons.x_pos, canyons.size);
@@ -231,13 +239,14 @@ function draw() {
 function keyPressed() {
 	// if statements to control the animation of the character when
 	// keys are pressed.
-	if (key === 'a' || keyCode === 65) {
+	const notFalling = !isFalling && !isPlummeting;
+	if (key === 'a' || key === 'ArrowLeft') {
 		isLeft = true;
 	}
-	if (key === 'd' || keyCode === 68) {
+	if (key === 'd' || key === 'ArrowRight') {
 		isRight = true;
 	}
-	if (key === 'w' && !isFalling && !isPlummeting) {
+	if (key === 'w' && notFalling || key === 'ArrowUp' && notFalling ) {
 		isJumping = true;
 	}
 }
@@ -246,10 +255,10 @@ function keyReleased() {
 	// if statements to control the animation of the character when
 	// keys are released.
 
-	if (key === 'a' || keyCode === 65) {
+	if (key === 'a' || key === 'ArrowLeft') {
 		isLeft = false;
 	}
-	if (key === 'd' || keyCode === 68) {
+	if (key === 'd' || key === 'ArrowRight') {
 		isRight = false;
 	}
 }
