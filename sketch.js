@@ -7,6 +7,8 @@ let floorPosY;
 let initPos;
 
 let cameraPosX;
+let lives;
+let score;
 
 let isLeft;
 let isRight;
@@ -39,18 +41,10 @@ function getCameraOffset() {
 	return 0;
 }
 
-function setup() {
-	createCanvas(1024, 576);
-	initPos = width / 2;
-	floorPosY = height * 3 / 4;
-	gameChar = {
-		x: initPos,
-		y: floorPosY,
-		score: 0,
-		lives: 3
-	}
-
+function startGame() {
 	cameraPosX = 0;
+	lives = 3;
+	score = 0;
 
 	isLeft = false;
 	isRight = false;
@@ -58,11 +52,17 @@ function setup() {
 	isFalling = false;
 	isPlummeting = false;
 
+	finishLine = {
+		posX: 1000,
+		posY: floorPosY - 100,
+		isReached: false
+	}
+
 	allTrees = [
-		{ posX: 23 }, 
-		{ posX: 421 }, 
-		{ posX: 732 }, 
-		{ posX: 962 }, 
+		{ posX: 23 },
+		{ posX: 421 },
+		{ posX: 732 },
+		{ posX: 962 },
 		{ posX: 1231, color: colorYellow }
 	]
 
@@ -151,7 +151,44 @@ function setup() {
 			size: 100
 		}
 	]
+}
 
+function setup() {
+	createCanvas(1024, 576);
+	initPos = width / 2;
+	floorPosY = height * 3 / 4;
+	gameChar = {
+		x: initPos,
+		y: floorPosY,
+	}
+	startGame();
+}
+
+//check finishLine
+function checkFinishline(){
+	if (dist(finishLine.posX, floorPosY, gameChar.x, gameChar.y) < 10) {
+		finishLine.isReached = true;
+	}
+}
+
+//check player death
+function checkJakeFall(){
+	if(lives > 0){
+		if (gameChar.y > height) { //reset
+			textSize(500);
+			text('❤️‍🩹', (width / 2) - 340, (height / 2) + 150)
+			if (gameChar.y > height + 300) {
+				lives -= 1;
+				isFalling = false;
+				isPlummeting = false;
+				gameChar.y = floorPosY;
+				gameChar.x = width / 2;
+			}
+		}
+	} else {
+		startGame();
+	}
+	
 }
 
 function draw() {
@@ -161,12 +198,7 @@ function draw() {
 	noStroke();
 	fill(0, 155, 0);
 	rect(0, floorPosY, width, height - floorPosY); //draw some green ground
-	textSize(100);
-	text(`dosh ` + gameChar.score, 50,100);
-	
-	for (let i = 0; i < gameChar.lives; i++) {
-		text('❤️', i*100, 150)
-	}
+
 
 	push();
 	translate(-cameraPosX, 0);
@@ -197,8 +229,19 @@ function draw() {
 	}
 
 	drawCollectable(allCollectables);
+	drawFinishline(finishLine);
 
+	
 	pop();
+
+	textSize(60);
+	fill(225, 210, 0);
+
+	text(`dosh ` + score, 15, 70);
+
+	for (let i = 0; i < lives; i++) {
+		text('❤️', i * 70, 130)
+	}
 
 	//gather collectable
 	for (let i = 0; i < allCollectables.length; i++) {
@@ -207,7 +250,7 @@ function draw() {
 			allCollectables[i].size += 5;
 			if (allCollectables[i].size > 70) {
 				allCollectables[i].isFound = true;
-				gameChar.score += allCollectables[i].value;
+				score += allCollectables[i].value;
 			}
 		}
 	}
@@ -240,13 +283,9 @@ function draw() {
 	} else {
 		isPlummeting = false;
 	}
-	if (gameChar.y > height + 400) { //reset
-		gameChar.lives -= 1;
-		isFalling = false;
-		isPlummeting = false;
-		gameChar.y = floorPosY;
-		gameChar.x = width / 2;
-	}
+	
+	checkJakeFall();
+	checkFinishline();
 }
 
 

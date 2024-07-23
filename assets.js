@@ -57,6 +57,14 @@ function drawCoin(c) {
     rect(posX - 1, posY + 5, c.size - 30, c.size - 10, 200)
 }
 
+function drawFinishline(f) {
+    if(!f.isReached){
+		rect(f.posX, f.posY, 100, 100);
+	} else {
+		rect(f.posX, f.posY, 200, 200);
+	}
+}
+
 function drawMountain(m) {
     fill(100, 120, 200);
     beginShape()
