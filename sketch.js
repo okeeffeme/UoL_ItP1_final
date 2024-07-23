@@ -46,7 +46,8 @@ function setup() {
 	gameChar = {
 		x: initPos,
 		y: floorPosY,
-		score: 0
+		score: 0,
+		lives: 3
 	}
 
 	cameraPosX = 0;
@@ -161,7 +162,12 @@ function draw() {
 	fill(0, 155, 0);
 	rect(0, floorPosY, width, height - floorPosY); //draw some green ground
 	textSize(100);
-	text(`dosh ` + gameChar.score, 50,100)
+	text(`dosh ` + gameChar.score, 50,100);
+	
+	for (let i = 0; i < gameChar.lives; i++) {
+		text('❤️', i*100, 150)
+	}
+
 	push();
 	translate(-cameraPosX, 0);
 
@@ -235,6 +241,7 @@ function draw() {
 		isPlummeting = false;
 	}
 	if (gameChar.y > height + 400) { //reset
+		gameChar.lives -= 1;
 		isFalling = false;
 		isPlummeting = false;
 		gameChar.y = floorPosY;
