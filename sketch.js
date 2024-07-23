@@ -45,7 +45,8 @@ function setup() {
 	floorPosY = height * 3 / 4;
 	gameChar = {
 		x: initPos,
-		y: floorPosY
+		y: floorPosY,
+		score: 0
 	}
 
 	cameraPosX = 0;
@@ -116,19 +117,22 @@ function setup() {
 			posX: 700,
 			posY: 200,
 			size: 50,
-			isFound: false
+			isFound: false,
+			value: 100
 		},
 		{
 			posX: 600,
 			posY: 400,
 			size: 50,
-			isFound: false
+			isFound: false,
+			value: 100
 		},
 		{
 			posX: 800,
 			posY: 300,
 			size: 50,
-			isFound: false
+			isFound: false,
+			value: 100
 		},
 	]
 
@@ -156,7 +160,8 @@ function draw() {
 	noStroke();
 	fill(0, 155, 0);
 	rect(0, floorPosY, width, height - floorPosY); //draw some green ground
-
+	textSize(100);
+	text(`dosh ` + gameChar.score, 50,100)
 	push();
 	translate(-cameraPosX, 0);
 
@@ -191,10 +196,12 @@ function draw() {
 
 	//gather collectable
 	for (let i = 0; i < allCollectables.length; i++) {
-		if (dist(allCollectables[i].posX, allCollectables[i].posY, gameChar.x, gameChar.y) < 45) {
+		let closeEnough = dist(allCollectables[i].posX, allCollectables[i].posY, gameChar.x, gameChar.y) < 45;
+		if (closeEnough && !allCollectables[i].isFound) {
 			allCollectables[i].size += 5;
-			if (allCollectables[i].size > 60) {
+			if (allCollectables[i].size > 70) {
 				allCollectables[i].isFound = true;
+				gameChar.score += allCollectables[i].value;
 			}
 		}
 	}
