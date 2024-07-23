@@ -313,3 +313,46 @@ function drawJakeJumpingRight(posX, posY) {
     drawEarSide(posX, posY, -6);
     drawEye(posX, posY, 11, 2);
 }
+
+//render all canyons
+function drawCanyons(c) {
+	for (let i = 0; i < c.length; i++) {
+		drawCanyon(c[i]);
+	}
+}
+
+//render all clouds
+function drawClouds(c) {
+	for (let i = 0; i < c.length; i++) {
+		drawCloud(c[i]);
+	}
+}
+
+//render all collectable
+function drawCollectable(c) {
+	for (let i = 0; i < c.length; i++) {
+		if (!c[i].isFound) {
+			drawCoin(c[i]);
+		}
+	}
+}
+
+//render all mountains
+function drawMountains(m) {
+	for (let i = 0; i < m.length; i++) {
+		drawMountain(m[i]);
+	}
+}
+
+//render all trees
+function drawTrees(t) {
+	for (let i = 0; i < t.length; i++) {
+		if (t[i].posX % 3 == 1) {
+			drawTree2(t[i]);
+		} else if (t[i].posX % 3 == 2) {
+			drawTree3(t[i]);
+		} else {
+			drawTree1(t[i]);
+		}
+	}
+}

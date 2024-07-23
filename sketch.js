@@ -40,56 +40,6 @@ function getCameraOffset() {
 	}
 	return 0;
 }
-//draw mountains
-function drawMountains() {
-	for (let i = 0; i < allMountains.length; i++) {
-		drawMountain(allMountains[i]);
-	}
-}
-
-//draw clouds
-function drawClouds() {
-	for (let i = 0; i < allClouds.length; i++) {
-		drawCloud(allClouds[i]);
-	}
-}
-
-//draw trees
-function drawTrees() {
-	for (let i = 0; i < allTrees.length; i++) {
-		if (allTrees[i].posX % 3 == 1) {
-			drawTree2(allTrees[i]);
-		} else if (allTrees[i].posX % 3 == 2) {
-			drawTree3(allTrees[i]);
-		} else {
-			drawTree1(allTrees[i]);
-		}
-	}
-}
-
-//draw canyons
-function drawCanyons() {
-	for (let i = 0; i < allCanyons.length; i++) {
-		drawCanyon(allCanyons[i]);
-	}
-}
-
-function checkCollectable(item) {
-	if (!item.isFound) {
-		return true;
-	} else {
-		return false;
-	}
-}
-
-//draw collectable
-function drawCollectable(allCollectables) {
-	for (let i = 0; i < allCollectables.length; i++) {
-		if (checkCollectable(allCollectables[i])) {
-			drawCoin(allCollectables[i]);
-		}
-	}
-}
 
 function setup() {
 	createCanvas(1024, 576);
@@ -206,10 +156,10 @@ function draw() {
 	push();
 	translate(-cameraPosX, 0);
 
-	drawMountains();
-	drawClouds();
-	drawTrees();
-	drawCanyons();
+	drawMountains(allMountains);
+	drawClouds(allClouds);
+	drawTrees(allTrees);
+	drawCanyons(allCanyons);
 
 	//the game character
 	if (isLeft && isFalling) {
@@ -234,8 +184,6 @@ function draw() {
 	drawCollectable(allCollectables);
 
 	pop();
-
-
 
 	//gather collectable
 	for (let i = 0; i < allCollectables.length; i++) {
