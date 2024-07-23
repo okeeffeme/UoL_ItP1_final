@@ -1,12 +1,7 @@
-/*
-
+/* 
 The Game Project
-
-Midterm
-
-Scrolling
-
 */
+
 let gameChar_x;
 let gameChar_y;
 let floorPos_y;
@@ -48,24 +43,24 @@ function getCameraOffset() {
 //draw mountains
 function drawMountains() {
 	for (let i = 0; i < allMountains.length; i++) {
-		drawMountain(allMountains[i].posX, allMountains[i].size);
+		drawMountain(allMountains[i]);
 	}
 }
 
 //draw clouds
 function drawClouds() {
 	for (let i = 0; i < allClouds.length; i++) {
-		drawCloud(allClouds[i].posX, allClouds[i].posY, allClouds[i].size);
+		drawCloud(allClouds[i]);
 	}
 }
 
 //draw trees
 function drawTrees() {
 	for (let i = 0; i < allTrees.length; i++) {
-		if (allTrees[i] % 3 == 1) {
-			drawTree2(allTrees[i], floorPos_y);
-		} else if (allTrees[i] % 3 == 2) {
-			drawTree3(allTrees[i], floorPos_y);
+		if (allTrees[i].posX % 3 == 1) {
+			drawTree2(allTrees[i]);
+		} else if (allTrees[i].posX % 3 == 2) {
+			drawTree3(allTrees[i]);
 		} else {
 			drawTree1(allTrees[i]);
 		}
@@ -112,7 +107,7 @@ function setup() {
 	isPlummeting = false;
 
 	allTrees = [
-		23, 421, 732, 962, 1231
+		{posX: 23}, {posX: 421}, {posX: 732}, {posX: 962}, {posX: 1231}
 	]
 
 	allClouds = [{
