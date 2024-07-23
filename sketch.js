@@ -2,9 +2,8 @@
 The Game Project
 */
 
-let gameChar_x;
-let gameChar_y;
-let floorPos_y;
+let gameChar;
+let floorPosY;
 let initPos;
 
 let cameraPosX;
@@ -25,8 +24,7 @@ let trees;
 function isOverCanyon() {
 	let o = false;
 	for (let i = 0; i < allCanyons.length; i++) {
-		console.log('canyoncheckInner', o)
-		if(gameChar_x > allCanyons[i].posX + 10 && gameChar_x < allCanyons[i].posX + (allCanyons[i].size - 10)){
+		if (gameChar.x > allCanyons[i].posX + 10 && gameChar.x < allCanyons[i].posX + (allCanyons[i].size - 10)) {
 			o = true;
 			break;
 		}
@@ -35,8 +33,8 @@ function isOverCanyon() {
 }
 
 function getCameraOffset() {
-	if (gameChar_x - initPos >= 0) {
-		return gameChar_x - initPos;
+	if (gameChar.x - initPos >= 0) {
+		return gameChar.x - initPos;
 	}
 	return 0;
 }
@@ -44,9 +42,11 @@ function getCameraOffset() {
 function setup() {
 	createCanvas(1024, 576);
 	initPos = width / 2;
-	floorPos_y = height * 3 / 4;
-	gameChar_x = initPos;
-	gameChar_y = floorPos_y;
+	floorPosY = height * 3 / 4;
+	gameChar = {
+		x: initPos,
+		y: floorPosY
+	}
 
 	cameraPosX = 0;
 
@@ -57,7 +57,11 @@ function setup() {
 	isPlummeting = false;
 
 	allTrees = [
-		{posX: 23}, {posX: 421}, {posX: 732}, {posX: 962}, {posX: 1231}
+		{ posX: 23 }, 
+		{ posX: 421 }, 
+		{ posX: 732 }, 
+		{ posX: 962 }, 
+		{ posX: 1231, color: colorYellow }
 	]
 
 	allClouds = [{
@@ -134,11 +138,11 @@ function setup() {
 			size: 100
 		},
 		{
-			posX: 420,
+			posX: 620,
 			size: 100
 		},
 		{
-			posX: 620,
+			posX: 820,
 			size: 100
 		}
 	]
@@ -151,7 +155,7 @@ function draw() {
 	background(100, 155, 255); //fill the sky blue
 	noStroke();
 	fill(0, 155, 0);
-	rect(0, floorPos_y, width, height - floorPos_y); //draw some green ground
+	rect(0, floorPosY, width, height - floorPosY); //draw some green ground
 
 	push();
 	translate(-cameraPosX, 0);
@@ -163,22 +167,22 @@ function draw() {
 
 	//the game character
 	if (isLeft && isFalling) {
-		drawJakeJumpingLeft(gameChar_x, gameChar_y);
+		drawJakeJumpingLeft(gameChar.x, gameChar.y);
 	}
 	else if (isRight && isFalling) {
-		drawJakeJumpingRight(gameChar_x, gameChar_y);
+		drawJakeJumpingRight(gameChar.x, gameChar.y);
 	}
 	else if (isLeft) {
-		drawJakeWalkingLeft(gameChar_x, gameChar_y);
+		drawJakeWalkingLeft(gameChar.x, gameChar.y);
 	}
 	else if (isRight) {
-		drawJakeWalkingRight(gameChar_x, gameChar_y);
+		drawJakeWalkingRight(gameChar.x, gameChar.y);
 	}
 	else if (isFalling || isPlummeting) {
-		drawJakeFrontJumping(gameChar_x, gameChar_y);
+		drawJakeFrontJumping(gameChar.x, gameChar.y);
 	}
 	else {
-		drawJakeFront(gameChar_x, gameChar_y);
+		drawJakeFront(gameChar.x, gameChar.y);
 	}
 
 	drawCollectable(allCollectables);
@@ -187,7 +191,7 @@ function draw() {
 
 	//gather collectable
 	for (let i = 0; i < allCollectables.length; i++) {
-		if (dist(allCollectables[i].posX, allCollectables[i].posY, gameChar_x, gameChar_y) < 45) {
+		if (dist(allCollectables[i].posX, allCollectables[i].posY, gameChar.x, gameChar.y) < 45) {
 			allCollectables[i].size += 5;
 			if (allCollectables[i].size > 60) {
 				allCollectables[i].isFound = true;
@@ -198,36 +202,36 @@ function draw() {
 	///////////INTERACTION CODE//////////
 	//Put conditional statements to move the game character below here
 	if (isRight) {
-		gameChar_x += 2;
+		gameChar.x += 2;
 	}
 	if (isLeft) {
-		gameChar_x -= 2;
+		gameChar.x -= 2;
 	}
 	if (isJumping) {
-		gameChar_y -= 8;
-		if (gameChar_y < floorPos_y - 120) {
+		gameChar.y -= 8;
+		if (gameChar.y < floorPosY - 120) {
 			isJumping = false;
 		}
 	}
-	if (gameChar_y < floorPos_y && !isJumping) { //falling
+	if (gameChar.y < floorPosY && !isJumping) { //falling
 		isFalling = true;
-		gameChar_y += 4;
+		gameChar.y += 4;
 	} else {
 		isFalling = false;
 	}
-	if (isOverCanyon() && gameChar_y >= floorPos_y && !isFalling) { //plummeting
+	if (isOverCanyon() && gameChar.y >= floorPosY && !isFalling) { //plummeting
 		isLeft = false;
 		isRight = false;
 		isPlummeting = true;
-		gameChar_y += 8;
+		gameChar.y += 8;
 	} else {
 		isPlummeting = false;
 	}
-	if (gameChar_y > height + 400) { //reset
+	if (gameChar.y > height + 400) { //reset
 		isFalling = false;
 		isPlummeting = false;
-		gameChar_y = floorPos_y;
-		gameChar_x = width / 2;
+		gameChar.y = floorPosY;
+		gameChar.x = width / 2;
 	}
 }
 

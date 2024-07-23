@@ -16,6 +16,13 @@ const colorPink = {
     rgb: [229, 133, 216]
 }
 
+const colorYellow = {
+    lr: 255,
+    lg: 165,
+    lb: 0,
+    rgb: [255, 165, 0]
+}
+
 function resize(percentage, val) {
     return (percentage * val) / 100;
 }
