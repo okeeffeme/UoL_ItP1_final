@@ -57,14 +57,6 @@ function drawCoin(c) {
     rect(posX - 1, posY + 5, c.size - 30, c.size - 10, 200)
 }
 
-function drawFinishline(f) {
-    if(!f.isReached){
-		rect(f.posX, f.posY, 100, 100);
-	} else {
-		rect(f.posX, f.posY, 200, 200);
-	}
-}
-
 function drawMountain(m) {
     fill(100, 120, 200);
     beginShape()
@@ -188,6 +180,7 @@ function drawEye(posX, posY, adj, side = 0) {
 }
 function drawFoot(posX, posY, adjX, adjY = 2) {
     fill(colorFur);
+    noStroke();
     ellipse(posX + adjX, posY - adjY, 10, 6) //foot
 }
 function drawMouthFront(posX, posY) {
@@ -328,6 +321,60 @@ function drawJakeJumpingRight(posX, posY) {
     drawEarSide(posX, posY, -6);
     drawEye(posX, posY, 11, 2);
 }
+function drawJakeWin(posX, posY) {
+    strokeCap(ROUND);
+    drawBody(posX, posY);
+    drawFoot(posX, posY, 12);
+    drawFoot(posX, posY, -12);
+    strokeWeight(5);
+    stroke(colorFur);
+    noFill();
+    arc(posX, posY - 70, 40, 50, PI * 2, PI); //arms
+    arc(posX, posY - 2, 20, 70, PI, PI * 2); //legs
+    drawEye(posX, posY, -8);
+    drawEye(posX, posY, 8);
+    drawMouthFront(posX, posY);
+}
+
+function drawSandwhich(posX, posY) {
+    noStroke();
+    fill(255, 145, 0) //bottom bun
+    rect(posX, posY-20, 70, 20, 20, 20, 6, 6);
+    fill('pink') //ham
+    rect(posX, posY-21, 70, 10, 20, 20, 4, 10);
+    fill('red') //tomato
+    rect(posX+5, posY-25, 60, 10, 20, 20, 4, 10);
+    fill('green'); //lettuce
+    ellipse(posX+13,posY-23,30,16);
+    ellipse(posX+35,posY-25,30,14);
+    ellipse(posX+58,posY-23,30,18);
+    fill(255, 185, 0) //top bun
+    rect(posX, posY-45, 30, 20, 20, 20, 6, 6);
+    rect(posX+20, posY-45, 30, 20, 20, 20, 6, 6);
+    rect(posX+40, posY-45, 30, 20, 20, 20, 6, 6);
+}
+
+function drawFinishline(f, font1) {
+    if(!f.isReached){
+        drawSandwhich(f.posX, f.posY);
+    } else {
+        noStroke();
+        fill('yellow');
+        textAlign(CENTER);
+        strokeJoin(BEVEL);
+        textFont(font1);
+        text('You did it!', f.posX, f.posY-180);
+        ellipse(f.posX, f.posY-64, 200,200);
+        drawSandwhich(f.posX-33, f.posY-80);
+		drawJakeWin(f.posX, f.posY);
+        fill('black');
+        stroke('white');
+        strokeJoin(BEVEL);
+        textFont(font1);
+        text('Press F', f.posX-180,f.posY);
+        text('to continue', f.posX+200,f.posY);
+	}
+}
 
 //render all canyons
 function drawCanyons(c) {
@@ -369,5 +416,18 @@ function drawTrees(t) {
 		} else {
 			drawTree1(t[i]);
 		}
+	}
+}
+
+function drawScoreboard(s, l, font){
+    textSize(60);
+	textAlign(LEFT);
+	fill(225, 210, 0);
+    textFont(font)
+	text('dosh ' + s, 15, 70);
+	// text('total wins ' + totalWins, 0, height - 20);
+    textFont('Arial');
+	for (let i = 0; i < l; i++) {
+		text('❤️', i * 70, 130)
 	}
 }
