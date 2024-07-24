@@ -188,8 +188,10 @@ function checkFinishline() {
 function checkPlayerDeath(char) {
 	const isPlayerOutOfWorld = char.y > height;
 	if (lives > 0) {
-		const pointsMessage = lives-1 === 1 ? 'point' : 'points';
+		const pointsMessage = lives-1 === 1 ? 'stretch' : 'stretches';
 		if (isPlayerOutOfWorld) { //reset
+			const cHeight = height / 2;
+			const cWidth = width / 2;
 			char.isDead = true;
 			textSize(450);
 			fill(0, 0, 0, 90);
@@ -197,13 +199,32 @@ function checkPlayerDeath(char) {
 			fill(0, 0, 0, 1000);
 			textAlign(CENTER);
 			textFont('Arial');
-			text('❤️‍🩹', (width / 2) , (height / 2) + 150);
+			text('❤️‍🩹', cWidth , cHeight + 150);
 			textFont(font);
-			textSize(24);
+			textSize(34);
+			stroke('grey');
+			strokeJoin(BEVEL);
 			if (lives-1 === 0) {
-				text('Give all your dosh to Doctor Princess!', width / 2, (height / 2)-40)
+				text('Give all your dosh', cWidth, cHeight-50);
+				text('to Doctor Princess!', cWidth, cHeight-10);
+				noStroke();
+				fill('#c9752f');
+				rect(cWidth-200, cHeight, 400, 100, 50);
+				fill('#e49658');
+				rect(cWidth-50, cHeight+5, 100, 90, 20);
+				fill('black')
+				text('Press F to try again', cWidth, cHeight+60);
 			} else {
-				text('Jake has ' + (lives-1) + ' stretch ' + pointsMessage + ' left.', width / 2, (height / 2)-40);
+				
+				text('Press F to ', cWidth, cHeight-50);
+				text('stretch out of the hole...', cWidth, cHeight-10);
+				noStroke();
+				fill('#c9752f');
+				rect(cWidth-200, cHeight, 400, 100, 50);
+				fill('#e49658');
+				rect(cWidth-50, cHeight+5, 100, 90, 20);
+				fill('black')
+				text('Jake has ' + (lives-1) + ' ' + pointsMessage + ' left.', cWidth, cHeight+60);
 			}
 		}
 	} else {
@@ -216,7 +237,7 @@ function resetPlayerRun(floorPosY) {
 	initChar(floorPosY);
 }
 
-function nextLevel() {
+function nextLevel(floorPosY) {
 	totalWins += 1;
 	initChar(floorPosY);
 }
@@ -226,7 +247,7 @@ function gatherCollectable(c) {
 	for (let i = 0; i < c.length; i++) {
 		let closeEnough = dist(c[i].posX, c[i].posY, gameChar.x, gameChar.y) < 45;
 		if (closeEnough && !c[i].isFound) {
-			c[i].size += 7; //animate the coins before they 'pop'
+			c[i].size += 7; //grow the collectable before they 'pop'
 			if (c[i].size > 65) {
 				c[i].isFound = true;
 				score += c[i].value;
@@ -238,9 +259,9 @@ function gatherCollectable(c) {
 
 
 function draw() {
-	console.log(totalWins)
+	console.log(gameChar.x)
 	cameraPosX = getCameraOffset();
-	///////////DRAWING CODE//////////
+	///////////DRAWING CODE//////////	
 	background(100, 155, 255); //fill the sky blue
 	noStroke();
 	fill(0, 155, 0);
@@ -279,7 +300,19 @@ function draw() {
 
 	drawCollectable(allCollectables);
 	drawFinishline(finishLine, font);
-
+	textFont(sandwhichFont);
+	textSize(80);
+	textAlign(LEFT);
+	fill('green')
+	text('Sandwhich Time', 40, height-50);
+	textFont(font);
+	textSize(26);
+	fill('white');
+	stroke('white');
+	strokeJoin(BEVEL);
+	strokeWeight(1);
+	text('Help Jake find his sandwhich... W, A, D to move.', 80, height-20);
+	noStroke();
 	pop();
 
 	drawScoreboard(score, lives, font);
@@ -356,7 +389,7 @@ function keyPressed() {
 		}
 	}  else {
 		if (checkKey(key) === 'down' || key === 'f' || key === 'F') {
-			nextLevel();
+			nextLevel(floorPosY);
 			startGame();
 		}
 	}
