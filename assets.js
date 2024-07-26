@@ -245,6 +245,10 @@ function drawJakeWalkingLeft(posX, posY) {
     arc(posX, posY - 2, 20, 70, PI, PI * 2); //legs
     noStroke();
     drawBody(posX, posY);
+
+    for(let i = 0; i < 40; i++) {
+        
+    }
     drawFoot(posX, posY, 8);
     drawFoot(posX, posY, -12, 4);
     drawMouthSide(posX, posY);
@@ -339,23 +343,23 @@ function drawJakeWin(posX, posY) {
 function drawSandwhich(posX, posY) {
     noStroke();
     fill(255, 145, 0) //bottom bun
-    rect(posX, posY-20, 70, 20, 20, 20, 6, 6);
+    rect(posX, posY - 20, 70, 20, 20, 20, 6, 6);
     fill('pink') //ham
-    rect(posX, posY-21, 70, 10, 20, 20, 4, 10);
+    rect(posX, posY - 21, 70, 10, 20, 20, 4, 10);
     fill('red') //tomato
-    rect(posX+5, posY-25, 60, 10, 20, 20, 4, 10);
+    rect(posX + 5, posY - 25, 60, 10, 20, 20, 4, 10);
     fill('green'); //lettuce
-    ellipse(posX+13,posY-23,30,16);
-    ellipse(posX+35,posY-25,30,14);
-    ellipse(posX+58,posY-23,30,18);
+    ellipse(posX + 13, posY - 23, 30, 16);
+    ellipse(posX + 35, posY - 25, 30, 14);
+    ellipse(posX + 58, posY - 23, 30, 18);
     fill(255, 185, 0) //top bun
-    rect(posX, posY-45, 30, 20, 20, 20, 6, 6);
-    rect(posX+20, posY-45, 30, 20, 20, 20, 6, 6);
-    rect(posX+40, posY-45, 30, 20, 20, 20, 6, 6);
+    rect(posX, posY - 45, 30, 20, 20, 20, 6, 6);
+    rect(posX + 20, posY - 45, 30, 20, 20, 20, 6, 6);
+    rect(posX + 40, posY - 45, 30, 20, 20, 20, 6, 6);
 }
 
 function drawFinishline(f, font1) {
-    if(!f.isReached){
+    if (!f.isReached) {
         drawSandwhich(f.posX, f.posY);
     } else {
         noStroke();
@@ -363,71 +367,130 @@ function drawFinishline(f, font1) {
         textAlign(CENTER);
         strokeJoin(BEVEL);
         textFont(font1);
-        text('You did it!', f.posX, f.posY-180);
-        ellipse(f.posX, f.posY-64, 200,200);
-        drawSandwhich(f.posX-33, f.posY-80);
-		drawJakeWin(f.posX, f.posY);
+        text('You did it!', f.posX, f.posY - 180);
+        ellipse(f.posX, f.posY - 64, 200, 200);
+        drawSandwhich(f.posX - 33, f.posY - 80);
+        drawJakeWin(f.posX, f.posY);
         fill('black');
         stroke('white');
         strokeJoin(BEVEL);
         textFont(font1);
-        text('Press F', f.posX-180,f.posY);
-        text('to continue', f.posX+200,f.posY);
-	}
+        text('Press F', f.posX - 180, f.posY);
+        text('to continue', f.posX + 200, f.posY);
+    }
 }
 
 //render all canyons
 function drawCanyons(c) {
-	for (let i = 0; i < c.length; i++) {
-		drawCanyon(c[i]);
-	}
+    for (let i = 0; i < c.length; i++) {
+        drawCanyon(c[i]);
+    }
 }
 
 //render all clouds
 function drawClouds(c) {
-	for (let i = 0; i < c.length; i++) {
-		drawCloud(c[i]);
-	}
+    for (let i = 0; i < c.length; i++) {
+        drawCloud(c[i]);
+    }
 }
 
 //render all collectable
 function drawCollectable(c) {
-	for (let i = 0; i < c.length; i++) {
-		if (!c[i].isFound) {
-			drawCoin(c[i]);
-		}
-	}
+    for (let i = 0; i < c.length; i++) {
+        if (!c[i].isFound) {
+            drawCoin(c[i]);
+        }
+    }
 }
 
 //render all mountains
 function drawMountains(m) {
-	for (let i = 0; i < m.length; i++) {
-		drawMountain(m[i]);
-	}
+    for (let i = 0; i < m.length; i++) {
+        drawMountain(m[i]);
+    }
 }
 
 //render all trees
 function drawTrees(t) {
-	for (let i = 0; i < t.length; i++) {
-		if (t[i].posX % 3 == 1) {
-			drawTree2(t[i]);
-		} else if (t[i].posX % 3 == 2) {
-			drawTree3(t[i]);
-		} else {
-			drawTree1(t[i]);
-		}
-	}
+    for (let i = 0; i < t.length; i++) {
+        if (t[i].posX % 3 == 1) {
+            drawTree2(t[i]);
+        } else if (t[i].posX % 3 == 2) {
+            drawTree3(t[i]);
+        } else {
+            drawTree1(t[i]);
+        }
+    }
 }
 
-function drawScoreboard(s, l, font){
+function drawScoreboard(s, l, font) {
     textSize(60);
-	textAlign(LEFT);
-	fill(225, 210, 0);
+    textAlign(LEFT);
+    fill(225, 210, 0);
     textFont(font)
-	text('dosh ' + s, 15, 70);
-	// text('total wins ' + totalWins, 0, height - 20);
+    text('dosh ' + s, 15, 70);
+    // text('total wins ' + totalWins, 0, height - 20);
     textFont('Arial');
-	for (let i = 0; i < l; i++) {
-		text('❤️', i * 70, 130)
-	}
+    for (let i = 0; i < l; i++) {
+        text('❤️', i * 70, 130)
+    }
+}
+
+function drawLevelDescription(font1, font2) {
+    textFont(font1);
+    textSize(80);
+    textAlign(LEFT);
+    fill('green')
+    text('Sandwhich Time', 40, height - 50);
+    textFont(font2);
+    textSize(26);
+    fill('white');
+    stroke('white');
+    strokeJoin(BEVEL);
+    strokeWeight(1);
+    text('Help Jake find his sandwhich... W, A, D to move.', 80, height - 20);
+    noStroke();
+}
+
+function drawBandageHeart(w, h) {
+    textSize(450);
+    fill(0, 0, 0, 90);
+    rect(0, 0, width, height);
+    fill(0, 0, 0, 1000);
+    textAlign(CENTER);
+    textFont('Arial');
+    text('❤️‍🩹', w, h + 150);
+}
+
+function drawEndGame(font, w, h) {
+    textFont(font);
+    textSize(34);
+    stroke('grey');
+    strokeJoin(BEVEL);
+    text('Give all your dosh', w, h - 50);
+    text('to Doctor Princess!', w, h - 10);
+    noStroke();
+    fill('#c9752f');
+    rect(w - 200, h, 400, 100, 50);
+    fill('#e49658');
+    rect(w - 50, h + 5, 100, 90, 20);
+    fill('black')
+    text('Press F to try again', w, h + 60);
+}
+
+function drawLostLife(font, w, h, l) {
+    const pointsMessage = l === 1 ? 'stretch' : 'stretches';
+    textFont(font);
+    textSize(34);
+    stroke('grey');
+    strokeJoin(BEVEL);
+    text('Press F to ', w, h - 50);
+    text('stretch out of the hole...', w, h - 10);
+    noStroke();
+    fill('#c9752f');
+    rect(w - 200, h, 400, 100, 50);
+    fill('#e49658');
+    rect(w - 50, h + 5, 100, 90, 20);
+    fill('black')
+    text('Jake has ' + (l) + ' ' + pointsMessage + ' left.', w, h + 60);
 }
