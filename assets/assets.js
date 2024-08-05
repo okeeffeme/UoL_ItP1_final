@@ -37,7 +37,7 @@ function createCanyon(posX, size) {
         posX,
         size: size || 100,
         draw: function() {
-            fill(70,30,0);
+            fill(40,30,0);
             rect(c.posX, 432, c.size, 144);
         }
     }
@@ -48,8 +48,8 @@ function createCloud(posX, posY, color, size) {
     let c = {
         posX,
         posY,
-        color: color || '255, 230, 230',
-        size: size || random(10, 60),
+        color: color || color(255, 230, 230),
+        size: size || random(20, 80),
         draw: function() {
             fill(this.color);
             ellipse(this.posX, this.posY, resize(this.size, 190), resize(this.size, 180));
@@ -59,7 +59,6 @@ function createCloud(posX, posY, color, size) {
     }
     return c;
 }
-
 
 function createCoin(posX, posY, value, size) {
     let c = {
@@ -86,11 +85,11 @@ function createCoin(posX, posY, value, size) {
     return c;
 }
 
-function createMountains(posX, size, color) {
+function createMountains(posX, color, size) {
     let m = {
         posX,
         size: size || 50,
-        color: color || '100, 120, 200',
+        color: color || color(100, 120, 200),
         draw: function() {
             fill(color);
             beginShape()
@@ -111,8 +110,12 @@ function createPlatforms(posX, posY, length) {
 		posY,
 		length,
 		draw: function() {
-			fill('red');
-			rect(this.posX, this.posY, this.length, 20);
+			fill('pink');
+			rect(this.posX, this.posY+10, this.length, 5);
+            fill('yellow');
+			rect(this.posX, this.posY+5, this.length, 5);
+            fill('cyan');
+			rect(this.posX, this.posY, this.length, 5);
 		},
 		checkContact: function(gc) {
 			let d = this.posY - gc.posY;
@@ -128,7 +131,7 @@ function createPlatforms(posX, posY, length) {
 	return p;
 }
 
-function drawTree1(t) {
+function drawBigTree(t) {
     const posX = t.posX;
     const posY = t?.posY - 105 || 327;
     const leafColor = colorGreen.rgb;
@@ -166,64 +169,104 @@ function drawTree1(t) {
     triangle(posX - 20, posY - 40, posX - 40, posY - 40, posX - 30, posY + 30);
 }
 
-function drawTree2(t) {
-    const posX = t.posX;
-    const posY = t?.posY - 100 || 332;
-    const tColor = t?.color || colorPink;
-    const leafColor = tColor.rgb;
-    const leafColorDark = color(tColor.lr - 10, tColor.lg - 10, tColor.lb - 10);
-    const leafBranchColor = color(tColor.lr, tColor.lg + 100, tColor.lb + 20);
-    const leafBranchColorDark = color(tColor.lr, tColor.lg + 80, tColor.lb + 20);
-
-    //trunk
-    fill(colorBark);
-    rect(posX, posY - 100, 20, 200, 2);
-    //mainLeafBack
-    fill(leafColorDark);
-    rect(posX - 60, posY - 160, 140, 110, 70);
-    //mainLeafFront
-    fill(leafColor);
-    rect(posX - 60, posY - 160, 140, 100, 70);
-    //secondLeafBack
-    fill(leafBranchColorDark);
-    rect(posX - 70, posY - 50, 60, 50, 70);
-    //branch
-    noFill();
-    stroke(colorBark);
-    strokeCap(SQUARE);
-    strokeWeight(14);
-    arc(posX, posY, 80, 60, HALF_PI, PI);
-    //secondLeafFront
-    fill(leafBranchColor);
-    noStroke();
-    rect(posX - 70, posY - 50, 60, 40, 70);
+function createTrees(posX, color) {
+    let t = {
+        posX,
+        color: color || colorGreen,
+        height: Math.floor(random(10,40)),
+        draw: function() {
+            if(this.height%3 === 0) {
+                drawTree2(this.posX, this.color, this.height)
+            } else {
+                drawTree3(this.posX, this.color, this.height)
+            }
+        }
+    }
+    return t;
 }
 
-function drawTree3(t) {
-    const posX = t.posX;
-    const posY = t?.posY - 100 || 332;
-    const tColor = t?.color || colorGreen;
-    const leafColor = tColor.rgb;
-    const leafColorDark = color(tColor.lr - 10, tColor.lg - 10, tColor.lb - 10);
-    const leafBranchColor = color(tColor.lr, tColor.lg + 100, tColor.lb + 20);
-    const leafBranchColorDark = color(tColor.lr, tColor.lg + 80, tColor.lb + 20);
+function drawTree2(x, c, height, y) {
+    const posX = x;
+    const posY = y - 100 || 332;
+    const tColor = c || colorPink;
+    const leafColor = tColor;
+    const leafColorDark = color(tColor.levels[0] - 10, tColor.levels[1] - 10, tColor.levels[2] - 10);
+    const leafBranchColor = color(tColor.levels[0], tColor.levels[1] + 100, tColor.levels[2] + 20);
+    const leafBranchColorDark = color(tColor.levels[0], tColor.levels[1] + 80, tColor.levels[2] + 20);
+    //trunk
+    fill(colorBark);
+    rect(posX, posY - 100-height, 20, 200+height, 2);
+    //mainLeafBack
+    fill(leafColorDark);
+    rect(posX - 60, posY - 160-height, 140, 110+height, 70);
+    //mainLeafFront
+    fill(leafColor);
+    rect(posX - 60, posY - 160-height, 140, 100+height, 70);
+    if(height%3 === 0) {
+        //secondLeafBack
+        fill(leafBranchColorDark);
+        rect(posX + 12, posY - 50+height, 60, 50, 70);
+        //branch
+        noFill();
+        stroke(colorBark);
+        strokeCap(SQUARE);
+        strokeWeight(14);
+        arc(posX, posY+height, 80, 60, 2*PI, 190);
+        //secondLeafFront
+        fill(leafBranchColor);
+        noStroke();
+        rect(posX + 12, posY - 50+height, 60, 40, 70);
+    }
+    if(height%2 === 0) {
+        //secondLeafBack
+        fill(leafBranchColorDark);
+        rect(posX - 70, posY - 50, 60, 50, 70);
+        //branch
+        noFill();
+        stroke(colorBark);
+        strokeCap(SQUARE);
+        strokeWeight(14);
+        arc(posX, posY, 80, 60, HALF_PI, PI);
+        //secondLeafFront
+        fill(leafBranchColor);
+        noStroke();
+        rect(posX - 70, posY - 50, 60, 40, 70);
+    }
+}
+
+function drawTree3(x, c, height, y) {
+    const posX = x;
+    const posY = y - 100 || 332;
+    const tColor = c || colorGreen;
+    const leafColor = tColor;
+    const leafColorDark = color(tColor.levels[0] - 10, tColor.levels[1] - 10, tColor.levels[2] - 10);
+    const leafBranchColor = color(tColor.levels[0], tColor.levels[1] + 100, tColor.levels[2] + 20);
+    const leafBranchColorDark = color(tColor.levels[0], tColor.levels[1] + 80, tColor.levels[2] + 20);
 
     //trunk
     fill(colorBark);
-    rect(posX, posY - 100, 20, 200, 2);
-    //mainLeafBack
-    fill(leafColorDark);
-    rect(posX - 60, posY - 50, 140, 110, 70);
-    //mainLeafFront
-    fill(leafColor);
-    rect(posX - 60, posY - 54, 140, 100, 70);
-    //secondLeafBack
-    fill(leafBranchColorDark);
-    rect(posX - 40, posY - 160, 100, 80, 70);
-
-    //secondLeafFront
-    fill(leafBranchColor);
-    rect(posX - 40, posY - 170, 100, 80, 70);
+    rect(posX, posY - 100-height, 20, 200+height, 2);
+    if(height%2 === 0) {
+        //mainLeafBack
+        fill(leafColorDark);
+        rect(posX - 60, posY - 50-height, 140, 110, 70);
+        //mainLeafFront
+        fill(leafColor);
+        rect(posX - 60, posY - 54-height, 140, 100, 70);
+        //secondLeafBack
+        fill(leafBranchColorDark);
+        rect(posX - 40, posY - 160-height, 100, 80, 70);
+        //secondLeafFront
+        fill(leafBranchColor);
+        rect(posX - 40, posY - 170-height, 100, 80, 70);
+    } else {
+        //mainLeafBack
+        fill(leafColorDark);
+        rect(posX - 60, posY - 165-height, 140, 110, 70);
+        //mainLeafFront
+        fill(leafColor);
+        rect(posX - 60, posY - 170-height, 140, 100, 70);
+    }   
 }
 
 
@@ -442,19 +485,6 @@ function drawFinishline(f, font) {
 function drawAssets(a) {
     for (let i = 0; i < a.length; i++) {
         a[i].draw();
-    }
-}
-
-//render all trees
-function drawTrees(t) {
-    for (let i = 0; i < t.length; i++) {
-        if (t[i].posX % 3 == 1) {
-            drawTree2(t[i]);
-        } else if (t[i].posX % 3 == 2) {
-            drawTree3(t[i]);
-        } else {
-            drawTree1(t[i]);
-        }
     }
 }
 

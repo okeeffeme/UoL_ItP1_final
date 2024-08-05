@@ -32,14 +32,14 @@ function preload() {
 }
 
 function getCameraOffset() {
-	if (gameChar.posX - initPos >= 0) {
-		return gameChar.posX - initPos;
+	if (gameChar.posX - width / 2 >= 0) {
+		return gameChar.posX - width / 2;
 	}
 	return 0;
 }
 
 function initChar(floorPosY) {
-	initPos = width / 2;
+	initPos = width / 5;
 	gameChar = {
 		posX: initPos,
 		posY: floorPosY,
@@ -90,97 +90,67 @@ function startGame() {
 	};
 
 	allTrees = [
-		{ posX: 23 },
-		{ posX: 421 },
-		{ posX: 732 },
-		{ posX: 962 },
-		{ posX: 1231, color: colorYellow }
+		// { posX: 23 },
+		// { posX: 421 },
+		// { posX: 732 },
+		// { posX: 962 },
+		// { posX: 1231, color: colorYellow }
 	];
 
-	allClouds = [
-	// 	{
-	// 	posX: 200,
-	// 	posY: 140,
-	// 	size: random(10, 60)
-	// },
-	// {
-	// 	posX: 300,
-	// 	posY: 60,
-	// 	size: random(10, 60)
-	// },
-	// {
-	// 	posX: 600,
-	// 	posY: 40,
-	// 	size: random(10, 60)
-	// },
-	// {
-	// 	posX: 800,
-	// 	posY: 80,
-	// 	size: random(10, 60)
-	// },
-	// {
-	// 	posX: 1100,
-	// 	posY: 60,
-	// 	size: random(10, 60)
-	// }
-];
-	allClouds.push(createCloud(100,100, 'pink'))
+	allClouds = [];
+	allMountains = [];
+	
+	allCollectables = [];
+	initAssets('coins', [
+		{posX: 280, posY: 400}, 
+		{posX: 400, posY: 280}, 
+		{posX: 450, posY: 200}, 
+		{posX: 500, posY: 280},
+		{posX: 600, posY: 340},
+		{posX: 770, posY: 300},
+		{posX: 960, posY: 400}, 
 
-	allMountains = [
-	// 	{
-	// 	posX: 20,
-	// 	size: random(20, 60)
-	// },
-	// {
-	// 	posX: 200,
-	// 	size: random(20, 60)
-	// },
-	// {
-	// 	posX: 600,
-	// 	size: random(20, 60)
-	// },
-	// {
-	// 	posX: 800,
-	// 	size: random(20, 60)
-	// },
-	// {
-	// 	posX: 1100,
-	// 	size: random(20, 60)
-	// }
-];
-	allMountains.push(createMountains(10, 100, 'pink'))
-	allCollectables = [
-		// {
-		// 	posX: 600,
-		// 	posY: 300,
-		// 	size: 50,
-		// 	isFound: false,
-		// 	value: 100
-		// },
-		// {
-		// 	posX: 1000,
-		// 	posY: 300,
-		// 	size: 50,
-		// 	isFound: false,
-		// 	value: 100
-		// },
-		// {
-		// 	posX: 800,
-		// 	posY: 300,
-		// 	size: 50,
-		// 	isFound: false,
-		// 	value: 100
-		// },
-	];
-	allCollectables.push(createCoin(400,300, 100))
-	console.log(allCollectables)
+	]
+	);
+
 
 	allCanyons = [];
-	allCanyons.push(createCanyon(620))
-	allCanyons.push(createCanyon(820))
+	initAssets('canyon', [620,820]);
 
 	allPlatforms = [];
-	allPlatforms.push(createPlatforms(300,340,200));
+	allPlatforms.push(createPlatforms(350,340,200));
+	initBackground(10);
+
+}
+
+function initAssets(type, args) {
+	const l = args.length;
+	switch (type) {
+		case 'canyon':
+			for (let i = 0; i < l; i++) {
+				allCanyons.push(createCanyon(args[i]));
+			}
+			return;
+		case 'coins':
+			for (let i = 0; i < l; i++) {
+				const vals = Object.values(args[i]);
+				allCollectables.push(createCoin(...vals))
+			}
+			return;
+		
+	}
+}
+
+function initBackground(l) {
+	const rand = (a, b) => Math.floor(random(a, b));
+	for (let i = 0; i < l; i++) {
+		let c1 = color(rand(90,100), rand(110,120), rand(180,200));
+		allMountains.push(createMountains(rand(i*200, i*340), c1, rand(60, 100)));
+		let c2 = color(rand(250,255), rand(200,230), rand(200,230));
+		allClouds.push(createCloud(rand(i*220, i*340), rand(i*40, 140), c2));
+		let c3 = color(rand(10,30), rand(40,100), rand(60,70));
+		allTrees.push(createTrees(rand(i*175, i*200), c3));
+	}
 }
 
 function initCustomSound() {
@@ -239,7 +209,6 @@ function handlePlayerMovement() {
 		}
 		else if (gameChar.isRight && gameChar.isFalling) {
 			drawJakeJumpingRight(gameChar.posX, gameChar.posY);
-
 		}
 		else if (gameChar.isLeft) {
 			drawJakeWalkingLeft(gameChar.posX, gameChar.posY);
@@ -268,10 +237,10 @@ function handleInteraction(b) {
 			}
 		}
 		if (gameChar.isRight) {
-			gameChar.posX += 2;
+			gameChar.posX += 3;
 		}
 		if (gameChar.isLeft) {
-			gameChar.posX -= 2;
+			gameChar.posX -= 3;
 		}
 		if (gameChar.isJumping && gameChar.currentJumpPower > 0) {
 				gameChar.posY -= 8;
@@ -334,7 +303,7 @@ function gatherCollectable(c) {
 		let closeEnough = dist(c[i].posX, c[i].posY, gameChar.posX, gameChar.posY) < 45;
 		if (closeEnough && !c[i].isFound) {
 			soundPickup.play();
-			c[i].size += 7; //grow the collectable before they 'pop'
+			c[i].size += 7.5; //grow the collectable before they 'pop'
 			if (c[i].size > 65) {
 				c[i].isFound = true;
 				score += c[i].value;
@@ -356,11 +325,14 @@ function draw() {
 	push();
 	translate(-cameraPosX, 0);
 
-	drawTrees(allTrees);
-	
+
 	drawAssets(allCanyons);
 	drawAssets(allMountains);
 	drawAssets(allClouds);
+	drawAssets(allTrees);
+
+	// drawTrees(allTrees);
+ 
 	drawAssets(allPlatforms);
 	
 	//Interation code
