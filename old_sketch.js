@@ -12,11 +12,12 @@ let totalWins;
 let lives;
 let score;
 
-let canyon;
-let clouds;
-let collectables;
-let mountains;
-let trees;
+let allCanyons;
+let allClouds;
+let allCollectables;
+let allMountains;
+let allTrees;
+let allPlatforms;
 
 let font;
 let fontSandwhich;
@@ -42,6 +43,8 @@ function initChar(floorPosY) {
 	gameChar = {
 		posX: initPos,
 		posY: floorPosY,
+		totalJumpPower: 120,
+		currentJumpPower: 120,
 		isLeft: false,
 		isRight: false,
 		isJumping: false,
@@ -61,17 +64,18 @@ function setIsPlummeting() {
 	}
 }
 
-
 function isOverCanyon(c) {
-	let o = false;
+	let isOver = false;
 	for (let i = 0; i < c.length; i++) {
 		if (gameChar.posX > c[i].posX + 10 && gameChar.posX < c[i].posX + (c[i].size - 10)) {
-			o = true;
+			isOver = true;
 			break;
 		}
 	}
-	return o;
+	return isOver;
 }
+
+
 
 
 function startGame() {
@@ -83,7 +87,7 @@ function startGame() {
 		posX: 1100,
 		posY: floorPosY,
 		isReached: false
-	}
+	};
 
 	allTrees = [
 		{ posX: 23 },
@@ -91,89 +95,92 @@ function startGame() {
 		{ posX: 732 },
 		{ posX: 962 },
 		{ posX: 1231, color: colorYellow }
-	]
+	];
 
-	allClouds = [{
-		posX: 200,
-		posY: 140,
-		size: random(10, 60)
-	},
-	{
-		posX: 300,
-		posY: 60,
-		size: random(10, 60)
-	},
-	{
-		posX: 600,
-		posY: 40,
-		size: random(10, 60)
-	},
-	{
-		posX: 800,
-		posY: 80,
-		size: random(10, 60)
-	},
-	{
-		posX: 1100,
-		posY: 60,
-		size: random(10, 60)
-	}]
+	allClouds = [
+	// 	{
+	// 	posX: 200,
+	// 	posY: 140,
+	// 	size: random(10, 60)
+	// },
+	// {
+	// 	posX: 300,
+	// 	posY: 60,
+	// 	size: random(10, 60)
+	// },
+	// {
+	// 	posX: 600,
+	// 	posY: 40,
+	// 	size: random(10, 60)
+	// },
+	// {
+	// 	posX: 800,
+	// 	posY: 80,
+	// 	size: random(10, 60)
+	// },
+	// {
+	// 	posX: 1100,
+	// 	posY: 60,
+	// 	size: random(10, 60)
+	// }
+];
+	allClouds.push(createCloud(100,100, 'pink'))
 
-	allMountains = [{
-		posX: 20,
-		size: random(20, 60)
-	},
-	{
-		posX: 200,
-		size: random(20, 60)
-	},
-	{
-		posX: 600,
-		size: random(20, 60)
-	},
-	{
-		posX: 800,
-		size: random(20, 60)
-	},
-	{
-		posX: 1100,
-		size: random(20, 60)
-	}]
-
+	allMountains = [
+	// 	{
+	// 	posX: 20,
+	// 	size: random(20, 60)
+	// },
+	// {
+	// 	posX: 200,
+	// 	size: random(20, 60)
+	// },
+	// {
+	// 	posX: 600,
+	// 	size: random(20, 60)
+	// },
+	// {
+	// 	posX: 800,
+	// 	size: random(20, 60)
+	// },
+	// {
+	// 	posX: 1100,
+	// 	size: random(20, 60)
+	// }
+];
+	allMountains.push(createMountains(10, 100, 'pink'))
 	allCollectables = [
-		{
-			posX: 600,
-			posY: 300,
-			size: 50,
-			isFound: false,
-			value: 100
-		},
-		{
-			posX: 1000,
-			posY: 300,
-			size: 50,
-			isFound: false,
-			value: 100
-		},
-		{
-			posX: 800,
-			posY: 300,
-			size: 50,
-			isFound: false,
-			value: 100
-		},
-	]
+		// {
+		// 	posX: 600,
+		// 	posY: 300,
+		// 	size: 50,
+		// 	isFound: false,
+		// 	value: 100
+		// },
+		// {
+		// 	posX: 1000,
+		// 	posY: 300,
+		// 	size: 50,
+		// 	isFound: false,
+		// 	value: 100
+		// },
+		// {
+		// 	posX: 800,
+		// 	posY: 300,
+		// 	size: 50,
+		// 	isFound: false,
+		// 	value: 100
+		// },
+	];
+	allCollectables.push(createCoin(400,300, 100))
+	console.log(allCollectables)
 
-	allCanyons = [
-		{
-			posX: 620,
-			size: 100
-		},
-		{
-			posX: 820,
-			size: 100
-		}
-	]
+	allCanyons = [];
+	allCanyons.push(createCanyon(620))
+	allCanyons.push(createCanyon(820))
+
+	allPlatforms = [];
+	allPlatforms.push(createPlatforms(300,340,200));
 }
 
 function initCustomSound() {
@@ -185,10 +192,9 @@ function initCustomSound() {
 	wave.start();
 }
 
-//Jump and Fall cannot play at the same time, so we're just modifying the same wave
+//Jump and Fall cannot play at the same time, so we're just modifying the same oscillator
 function playJumpSound(){
 	env.ramp(wave, 0, 1.2, 0);
-	// env.play();
 	wave.freq(600,0.2);
 	wave.freq(440);
 }
@@ -250,6 +256,46 @@ function handlePlayerMovement() {
 	}
 }
 
+///////////INTERACTION CODE//////////
+function handleInteraction(b) {
+	if(!finishLine.isReached) {
+		let contact = false;
+		for ( let i = 0; i < allPlatforms.length; i++) {
+			let c = allPlatforms[i].checkContact(gameChar);
+			if (c) {
+				contact = true;
+				break
+			}
+		}
+		if (gameChar.isRight) {
+			gameChar.posX += 2;
+		}
+		if (gameChar.isLeft) {
+			gameChar.posX -= 2;
+		}
+		if (gameChar.isJumping && gameChar.currentJumpPower > 0) {
+				gameChar.posY -= 8;
+				gameChar.currentJumpPower -= 8;
+			} else {
+				gameChar.isJumping = false;
+				gameChar.currentJumpPower = gameChar.totalJumpPower; //reset jump power
+			}
+		
+		if (gameChar.posY < floorPosY && !gameChar.isJumping && !contact) { //falling
+				gameChar.isFalling = true;
+				gameChar.posY += 4;
+		} else {
+			gameChar.isFalling = false;
+		}
+		if (isOverCanyon(allCanyons) && gameChar.posY >= floorPosY && !gameChar.isFalling) { //plummeting
+			setIsPlummeting();
+			gameChar.posY += 8;
+		} else {
+			gameChar.isPlummeting = false;
+		}
+	}
+}
+
 //checkPlayerDie
 function checkPlayerDeath(char) {
 	const isPlayerOutOfWorld = char.posY > height;
@@ -260,8 +306,7 @@ function checkPlayerDeath(char) {
 			const cHeight = height / 2;
 			const cWidth = width / 2;
 			const nextLife = lives - 1;
-			drawBandageHeart(cWidth, cHeight)
-			
+			drawBandageHeart(cWidth, cHeight) //background for all death messages
 			if (nextLife === 0) {
 				drawEndGame(font, cWidth, cHeight);
 			} else {
@@ -273,14 +318,14 @@ function checkPlayerDeath(char) {
 	}
 }
 
-function resetPlayerRun(floorPosY) {
+function resetPlayerRun(charInitY) {
 	lives -= 1;
-	initChar(floorPosY);
+	initChar(charInitY);
 }
 
-function nextLevel(floorPosY) {
+function nextLevel(charInitY) {
 	totalWins += 1;
-	initChar(floorPosY);
+	initChar(charInitY);
 }
 
 //gather collectable
@@ -303,59 +348,38 @@ function gatherCollectable(c) {
 function draw() {
 	cameraPosX = getCameraOffset();
 	///////////DRAWING CODE//////////	
-	background(100, 155, 255); //fill the sky blue
 	noStroke();
+	background(100, 155, 255); //fill the sky blue
 	fill(0, 155, 0);
 	rect(0, floorPosY, width, height - floorPosY); //draw some green ground
 
 	push();
 	translate(-cameraPosX, 0);
 
-	drawMountains(allMountains);
-	drawClouds(allClouds);
 	drawTrees(allTrees);
-	drawCanyons(allCanyons);
+	
+	drawAssets(allCanyons);
+	drawAssets(allMountains);
+	drawAssets(allClouds);
+	drawAssets(allPlatforms);
+	
+	//Interation code
+	handleInteraction();
 
 	//the game character
 	handlePlayerMovement();
 
-	drawCollectable(allCollectables);
+	// drawCollectable(allCollectables);
+	drawAssets(allCollectables);
+
+
 	drawFinishline(finishLine, font);
 	drawLevelDescription(fontSandwhich, font);
 	pop();
 
 	drawScoreboard(score, lives, font);
 
-	///////////INTERACTION CODE//////////
-	//Put conditional statements to move the game character below here
-	if(!finishLine.isReached) {
-		if (gameChar.isRight) {
-			gameChar.posX += 2;
-		}
-		if (gameChar.isLeft) {
-			gameChar.posX -= 2;
-		}
-		if (gameChar.isJumping) {
-			gameChar.posY -= 8;
-			if (gameChar.posY < floorPosY - 120) {
-				gameChar.isJumping = false;
-			}
-			
-			
-		}
-		if (gameChar.posY < floorPosY && !gameChar.isJumping) { //falling
-			gameChar.isFalling = true;
-			gameChar.posY += 4;
-		} else {
-			gameChar.isFalling = false;
-		}
-		if (isOverCanyon(allCanyons) && gameChar.posY >= floorPosY && !gameChar.isFalling) { //plummeting
-			setIsPlummeting()
-			gameChar.posY += 8;
-		} else {
-			gameChar.isPlummeting = false;
-		}
-	}
+	
 
 	gatherCollectable(allCollectables, score);
 	checkFinishline();
@@ -380,7 +404,6 @@ function keyPressed() {
 	// keys are pressed.	
 	const notFalling = !gameChar.isFalling && !gameChar.isPlummeting;
 	const validState = !gameChar.isDead && !finishLine.isReached;
-	console.log('gameChar.isDead', gameChar.isDead)
 	if (validState) {
 		if (checkKey(key) === 'left') {
 			gameChar.isLeft = true;
@@ -390,17 +413,15 @@ function keyPressed() {
 		}
 		if (notFalling) {
 			if (checkKey(key) === 'up') {
-				// soundPickup.play();
-				//env.play();
 				playJumpSound();
 				gameChar.isJumping = true;
 			}
 		}
-	} else if (gameChar.isDead) {
+	} else if (gameChar.isDead) { //reset on death
 		if (checkKey(key) === 'down' || key === 'f' || key === 'F') {
 			resetPlayerRun(floorPosY);
 		}
-	}  else {
+	}  else { //move to next level
 		if (checkKey(key) === 'down' || key === 'f' || key === 'F') {
 			nextLevel(floorPosY);
 			startGame();
@@ -411,9 +432,6 @@ function keyPressed() {
 function keyReleased() {
 	// if statements to control the animation of the character when
 	// keys are released.
-	// if(key === 'a') {
-	// 	runGame();
-	// }
 	if (checkKey(key) === "left") {
 		gameChar.isLeft = false;
 	}

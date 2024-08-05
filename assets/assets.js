@@ -32,40 +32,100 @@ function resizeYPinned(percentage, val, posY = 432) {
     return (percentage * val) / 100 - offset;
 }
 
-function drawCanyon(c) {
-    fill(70, 30, 0);
-    rect(c.posX, 432, c.size, 144);
+function createCanyon(posX, size) {
+    let c = {
+        posX,
+        size: size || 100,
+        draw: function() {
+            fill(70,30,0);
+            rect(c.posX, 432, c.size, 144);
+        }
+    }
+    return c;
 }
 
-function drawCloud(c) {
-    fill(255, 230, 230);
-    ellipse(c.posX, c.posY, resize(c.size, 190), resize(c.size, 180));
-    ellipse(c.posX - resize(c.size, 60), c.posY + resize(c.size, 40), resize(c.size, 190), resize(c.size, 160));
-    rect(c.posX - resize(c.size, 110), c.posY + resize(c.size, 10), resize(c.size, 250), resize(c.size, 110), 10, 60)
+function createCloud(posX, posY, color, size) {
+    let c = {
+        posX,
+        posY,
+        color: color || '255, 230, 230',
+        size: size || random(10, 60),
+        draw: function() {
+            fill(this.color);
+            ellipse(this.posX, this.posY, resize(this.size, 190), resize(this.size, 180));
+            ellipse(this.posX - resize(this.size, 60), this.posY + resize(this.size, 40), resize(this.size, 190), resize(this.size, 160));
+            rect(this.posX - resize(this.size, 110), this.posY + resize(this.size, 10), resize(this.size, 250), resize(this.size, 110), 10, 60)
+        }
+    }
+    return c;
 }
 
-function drawCoin(c) {
-    const posY = c.posY - c.size / 2;
-    const posX = c.posX - (c.size - 30) / 2
-    noStroke();
-    fill(225, 160, 0);
-    rect(posX, posY, c.size - 20, c.size, 200);
-    fill(225, 210, 0);
-    rect(posX - 6, posY, c.size - 20, c.size, 200);
-    stroke(225, 180, 0);
-    strokeWeight(3)
-    rect(posX - 1, posY + 5, c.size - 30, c.size - 10, 200)
+
+function createCoin(posX, posY, value, size) {
+    let c = {
+        posX,
+        posY,
+        value: value || 100,
+        size: size || 50,
+        isFound: false,
+        draw: function() {
+            if(!this.isFound) {
+                const posY = this.posY - this.size / 2;
+                const posX = this.posX - (this.size - 30) / 2
+                noStroke();
+                fill(225, 160, 0);
+                rect(posX, posY, this.size - 20, this.size, 200);
+                fill(225, 210, 0);
+                rect(posX - 6, posY, this.size - 20, this.size, 200);
+                stroke(225, 180, 0);
+                strokeWeight(3)
+                rect(posX - 1, posY + 5, this.size - 30, this.size - 10, 200)
+            }     
+        }
+    }
+    return c;
 }
 
-function drawMountain(m) {
-    fill(100, 120, 200);
-    beginShape()
-    vertex(m.posX, resizeYPinned(m.size, 432));
-    vertex(m.posX + resize(m.size, 200), resizeYPinned(m.size, 256));
-    vertex(m.posX + resize(m.size, 280), resizeYPinned(m.size, 300));
-    vertex(m.posX + resize(m.size, 380), resizeYPinned(m.size, 210));
-    vertex(m.posX + resize(m.size, 724), resizeYPinned(m.size, 432));
-    endShape(CLOSE);
+function createMountains(posX, size, color) {
+    let m = {
+        posX,
+        size: size || 50,
+        color: color || '100, 120, 200',
+        draw: function() {
+            fill(color);
+            beginShape()
+            vertex(this.posX, resizeYPinned(this.size, 432));
+            vertex(this.posX + resize(this.size, 200), resizeYPinned(this.size, 256));
+            vertex(this.posX + resize(this.size, 280), resizeYPinned(this.size, 300));
+            vertex(this.posX + resize(this.size, 380), resizeYPinned(this.size, 210));
+            vertex(this.posX + resize(this.size, 724), resizeYPinned(this.size, 432));
+            endShape(CLOSE);
+        }
+    }
+    return m;
+}
+
+function createPlatforms(posX, posY, length) {
+	let p = {
+		posX,
+		posY,
+		length,
+		draw: function() {
+			fill('red');
+			rect(this.posX, this.posY, this.length, 20);
+		},
+		checkContact: function(gc) {
+			let d = this.posY - gc.posY;
+			if(gc.posX + 10 > this.posX && gc.posX < this.posX + 10 + this.length) {
+				
+				if (d >= 0 && d < 3) {
+					return true;
+				}
+			}
+			return false;
+		}
+	}	
+	return p;
 }
 
 function drawTree1(t) {
@@ -167,7 +227,8 @@ function drawTree3(t) {
 }
 
 
-
+////CHARACTER////
+//helpers//
 function drawBody(posX, posY) {
     fill(colorFur);
     rect(posX - 15, posY - 66, 30, 46, 20);
@@ -206,8 +267,8 @@ function drawFootVertical(posX, posY, adjX, adjY = 2) {
     fill(colorFur);
     ellipse(posX + adjX, posY - adjY, 6, 10) //foot
 }
-
-
+////CHARACTER////
+//main bodies
 function drawJakeFront(posX, posY) {
     strokeCap(ROUND);
     drawBody(posX, posY);
@@ -246,9 +307,6 @@ function drawJakeWalkingLeft(posX, posY) {
     noStroke();
     drawBody(posX, posY);
 
-    for(let i = 0; i < 40; i++) {
-        
-    }
     drawFoot(posX, posY, 8);
     drawFoot(posX, posY, -12, 4);
     drawMouthSide(posX, posY);
@@ -358,7 +416,7 @@ function drawSandwhich(posX, posY) {
     rect(posX + 40, posY - 45, 30, 20, 20, 20, 6, 6);
 }
 
-function drawFinishline(f, font1) {
+function drawFinishline(f, font) {
     if (!f.isReached) {
         drawSandwhich(f.posX, f.posY);
     } else {
@@ -366,7 +424,7 @@ function drawFinishline(f, font1) {
         fill('yellow');
         textAlign(CENTER);
         strokeJoin(BEVEL);
-        textFont(font1);
+        textFont(font);
         text('You did it!', f.posX, f.posY - 180);
         ellipse(f.posX, f.posY - 64, 200, 200);
         drawSandwhich(f.posX - 33, f.posY - 80);
@@ -374,39 +432,16 @@ function drawFinishline(f, font1) {
         fill('black');
         stroke('white');
         strokeJoin(BEVEL);
-        textFont(font1);
+        textFont(font);
         text('Press F', f.posX - 180, f.posY);
         text('to continue', f.posX + 200, f.posY);
     }
 }
 
-//render all canyons
-function drawCanyons(c) {
-    for (let i = 0; i < c.length; i++) {
-        drawCanyon(c[i]);
-    }
-}
-
-//render all clouds
-function drawClouds(c) {
-    for (let i = 0; i < c.length; i++) {
-        drawCloud(c[i]);
-    }
-}
-
-//render all collectable
-function drawCollectable(c) {
-    for (let i = 0; i < c.length; i++) {
-        if (!c[i].isFound) {
-            drawCoin(c[i]);
-        }
-    }
-}
-
-//render all mountains
-function drawMountains(m) {
-    for (let i = 0; i < m.length; i++) {
-        drawMountain(m[i]);
+//render assets
+function drawAssets(a) {
+    for (let i = 0; i < a.length; i++) {
+        a[i].draw();
     }
 }
 
