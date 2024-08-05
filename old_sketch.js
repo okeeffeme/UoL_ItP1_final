@@ -12,12 +12,6 @@ let totalWins;
 let lives;
 let score;
 
-let isLeft;
-let isRight;
-let isJumping;
-let isFalling;
-let isPlummeting;
-
 let canyon;
 let clouds;
 let collectables;
@@ -25,21 +19,53 @@ let mountains;
 let trees;
 
 let font;
-let sandwhichFont;
+let fontSandwhich;
 let soundPickup;
+let wave;
+let env;
 
 function preload() {
-	font = loadFont('./EduSABeginner-VariableFont_wght.ttf');
-	sandwhichFont = loadFont('./MacondoSwashCaps-Regular.ttf');
-	soundPickup = loadSound('./MayGenko-pickup.wav');
-	soundPickup1 = loadSound('./MayGenko-pickup1.wav');
-	soundFall = loadSound('./MayGenko-fall.wav');
+	font = loadFont('./assets/EduSABeginner-VariableFont_wght.ttf');
+	fontSandwhich = loadFont('./assets/MacondoSwashCaps-Regular.ttf');
+	soundPickup = loadSound('./assets/MayGenko-pickup1.wav');
 }
+
+function getCameraOffset() {
+	if (gameChar.posX - initPos >= 0) {
+		return gameChar.posX - initPos;
+	}
+	return 0;
+}
+
+function initChar(floorPosY) {
+	initPos = width / 2;
+	gameChar = {
+		posX: initPos,
+		posY: floorPosY,
+		isLeft: false,
+		isRight: false,
+		isJumping: false,
+		isFalling: false,
+		isPlummeting: false,
+		isDead: false,
+	}
+}
+
+function setIsPlummeting() {
+	if(!gameChar.isPlummeting) {
+		gameChar.isFalling = false;
+		gameChar.isLeft = false;
+		gameChar.isRight = false;
+		gameChar.isPlummeting = true;
+		playFallSound();
+	}
+}
+
 
 function isOverCanyon(c) {
 	let o = false;
 	for (let i = 0; i < c.length; i++) {
-		if (gameChar.x > c[i].posX + 10 && gameChar.x < c[i].posX + (c[i].size - 10)) {
+		if (gameChar.posX > c[i].posX + 10 && gameChar.posX < c[i].posX + (c[i].size - 10)) {
 			o = true;
 			break;
 		}
@@ -47,27 +73,6 @@ function isOverCanyon(c) {
 	return o;
 }
 
-function getCameraOffset() {
-	if (gameChar.x - initPos >= 0) {
-		return gameChar.x - initPos;
-	}
-	return 0;
-}
-
-function initChar(floorPosY) {
-	isLeft = false;
-	isRight = false;
-	isJumping = false;
-	isFalling = false;
-	isPlummeting = false;
-
-	initPos = width / 2;
-	gameChar = {
-		x: initPos,
-		y: floorPosY,
-		isDead: false,
-	}
-}
 
 function startGame() {
 	cameraPosX = 0;
@@ -171,14 +176,38 @@ function startGame() {
 	]
 }
 
+function initCustomSound() {
+	env = new p5.Envelope();
+	env.setADSR(0.04, 0.2);
+	wave = new p5.Oscillator('sawtooth');
+	wave.amp(env);
+	wave.freq(440)
+	wave.start();
+}
+
+//Jump and Fall cannot play at the same time, so we're just modifying the same wave
+function playJumpSound(){
+	env.ramp(wave, 0, 1.2, 0);
+	// env.play();
+	wave.freq(600,0.2);
+	wave.freq(440);
+}
+
+function playFallSound(){
+	wave.freq(10,1);
+	env.play(wave, 0, 1);
+	wave.freq(440);
+}
+
 function setup() {
 	createCanvas(1024, 576);
 	textFont(font);
 	floorPosY = height * 3 / 4;
 	initChar(floorPosY);
+	initCustomSound();
 	startGame();
 	totalWins = 0;
-	noLoop();
+	// noLoop();
 }
 
 function runGame() {
@@ -188,18 +217,42 @@ function runGame() {
 
 //check finishLine
 function checkFinishline() {
-	if (dist(finishLine.posX, floorPosY, gameChar.x, gameChar.y) < 10) {
+	if (dist(finishLine.posX, floorPosY, gameChar.posX, gameChar.posY) < 10) {
 		finishLine.isReached = true;
 	}
 	if(finishLine.isReached) {
 		console.log('found')
-
 	}
 }
 
-//check player death, checkPlayerDie
+//handlePlayerMovement
+function handlePlayerMovement() {
+	if (!finishLine.isReached) { //we replace char drawing with finishLine drawing when true
+		if (gameChar.isLeft && gameChar.isFalling) {
+			drawJakeJumpingLeft(gameChar.posX, gameChar.posY);
+		}
+		else if (gameChar.isRight && gameChar.isFalling) {
+			drawJakeJumpingRight(gameChar.posX, gameChar.posY);
+
+		}
+		else if (gameChar.isLeft) {
+			drawJakeWalkingLeft(gameChar.posX, gameChar.posY);
+		}
+		else if (gameChar.isRight) {
+			drawJakeWalkingRight(gameChar.posX, gameChar.posY);
+		}
+		else if (gameChar.isFalling || gameChar.isPlummeting) {
+			drawJakeFrontJumping(gameChar.posX, gameChar.posY);
+		}
+		else {
+			drawJakeFront(gameChar.posX, gameChar.posY);
+		}
+	}
+}
+
+//checkPlayerDie
 function checkPlayerDeath(char) {
-	const isPlayerOutOfWorld = char.y > height;
+	const isPlayerOutOfWorld = char.posY > height;
 	if (lives > 0) {
 		if (isPlayerOutOfWorld) { //reset
 			char.isDead = true;
@@ -233,13 +286,13 @@ function nextLevel(floorPosY) {
 //gather collectable
 function gatherCollectable(c) {
 	for (let i = 0; i < c.length; i++) {
-		let closeEnough = dist(c[i].posX, c[i].posY, gameChar.x, gameChar.y) < 45;
+		let closeEnough = dist(c[i].posX, c[i].posY, gameChar.posX, gameChar.posY) < 45;
 		if (closeEnough && !c[i].isFound) {
+			soundPickup.play();
 			c[i].size += 7; //grow the collectable before they 'pop'
 			if (c[i].size > 65) {
 				c[i].isFound = true;
 				score += c[i].value;
-				soundPickup1.play();
 			}
 		}
 	}
@@ -248,16 +301,12 @@ function gatherCollectable(c) {
 
 
 function draw() {
-	if(isRunning) {
-		console.log('running')
-	}
 	cameraPosX = getCameraOffset();
 	///////////DRAWING CODE//////////	
 	background(100, 155, 255); //fill the sky blue
 	noStroke();
 	fill(0, 155, 0);
 	rect(0, floorPosY, width, height - floorPosY); //draw some green ground
-
 
 	push();
 	translate(-cameraPosX, 0);
@@ -268,31 +317,11 @@ function draw() {
 	drawCanyons(allCanyons);
 
 	//the game character
-	if (!finishLine.isReached) { //we replace char with finishLine when true
-		if (isLeft && isFalling) {
-			drawJakeJumpingLeft(gameChar.x, gameChar.y);
-		}
-		else if (isRight && isFalling) {
-			drawJakeJumpingRight(gameChar.x, gameChar.y);
-
-		}
-		else if (isLeft) {
-			drawJakeWalkingLeft(gameChar.x, gameChar.y);
-		}
-		else if (isRight) {
-			drawJakeWalkingRight(gameChar.x, gameChar.y);
-		}
-		else if (isFalling || isPlummeting) {
-			drawJakeFrontJumping(gameChar.x, gameChar.y);
-		}
-		else {
-			drawJakeFront(gameChar.x, gameChar.y);
-		}
-	}
+	handlePlayerMovement();
 
 	drawCollectable(allCollectables);
 	drawFinishline(finishLine, font);
-	drawLevelDescription(sandwhichFont, font);
+	drawLevelDescription(fontSandwhich, font);
 	pop();
 
 	drawScoreboard(score, lives, font);
@@ -300,31 +329,31 @@ function draw() {
 	///////////INTERACTION CODE//////////
 	//Put conditional statements to move the game character below here
 	if(!finishLine.isReached) {
-		if (isRight) {
-			gameChar.x += 2;
+		if (gameChar.isRight) {
+			gameChar.posX += 2;
 		}
-		if (isLeft) {
-			gameChar.x -= 2;
+		if (gameChar.isLeft) {
+			gameChar.posX -= 2;
 		}
-		if (isJumping) {
-			gameChar.y -= 8;
-			if (gameChar.y < floorPosY - 120) {
-				isJumping = false;
+		if (gameChar.isJumping) {
+			gameChar.posY -= 8;
+			if (gameChar.posY < floorPosY - 120) {
+				gameChar.isJumping = false;
 			}
+			
+			
 		}
-		if (gameChar.y < floorPosY && !isJumping) { //falling
-			isFalling = true;
-			gameChar.y += 4;
+		if (gameChar.posY < floorPosY && !gameChar.isJumping) { //falling
+			gameChar.isFalling = true;
+			gameChar.posY += 4;
 		} else {
-			isFalling = false;
+			gameChar.isFalling = false;
 		}
-		if (isOverCanyon(allCanyons) && gameChar.y >= floorPosY && !isFalling) { //plummeting
-			isLeft = false;
-			isRight = false;
-			isPlummeting = true;
-			gameChar.y += 8;
+		if (isOverCanyon(allCanyons) && gameChar.posY >= floorPosY && !gameChar.isFalling) { //plummeting
+			setIsPlummeting()
+			gameChar.posY += 8;
 		} else {
-			isPlummeting = false;
+			gameChar.isPlummeting = false;
 		}
 	}
 
@@ -349,19 +378,22 @@ function checkKey(key) {
 function keyPressed() {
 	// if statements to control the animation of the character when
 	// keys are pressed.	
-	const notFalling = !isFalling && !isPlummeting;
+	const notFalling = !gameChar.isFalling && !gameChar.isPlummeting;
 	const validState = !gameChar.isDead && !finishLine.isReached;
+	console.log('gameChar.isDead', gameChar.isDead)
 	if (validState) {
 		if (checkKey(key) === 'left') {
-			isLeft = true;
+			gameChar.isLeft = true;
 		}
 		if (checkKey(key) === 'right') {
-			isRight = true;
+			gameChar.isRight = true;
 		}
 		if (notFalling) {
 			if (checkKey(key) === 'up') {
-				soundPickup.play();
-				isJumping = true;
+				// soundPickup.play();
+				//env.play();
+				playJumpSound();
+				gameChar.isJumping = true;
 			}
 		}
 	} else if (gameChar.isDead) {
@@ -379,14 +411,14 @@ function keyPressed() {
 function keyReleased() {
 	// if statements to control the animation of the character when
 	// keys are released.
-	if(key === 'a') {
-		runGame();
-	}
+	// if(key === 'a') {
+	// 	runGame();
+	// }
 	if (checkKey(key) === "left") {
-		isLeft = false;
+		gameChar.isLeft = false;
 	}
 	if (checkKey(key) === "right") {
-		isRight = false;
+		gameChar.isRight = false;
 	}
 
 }

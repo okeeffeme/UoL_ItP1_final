@@ -1,19 +1,27 @@
-let Game = {
-    isRunning: false,
-    totalWins: 0,
-    stateToggle: function () {
+class Game {
+    #isRunning = false;
+    #totalWins = 0;
+
+    constructor() {
+        this.stateToggle = this.stateToggle.bind(this);
+        this.stateStop = this.stateStop.bind(this);
+    }
+
+    stateToggle () {
         this.isRunning = !this.isRunning; //toggle the isRunning state
         // if (this.isRunning) {
         //     loop();
         // } else {
         //     noLoop();
         // };
-    },
-    stateStop: function () {
+    };
+    stateStop () {
         // noLoop();
         this.isRunning = false;
     }
 }
+
+
 let Options = {
     main: [
         {title: 'Continue', action: 'playGame'},
@@ -35,46 +43,58 @@ let Options = {
         {title: 'Back to Main Menu', action: 'main'}
     ],
 }
-let Menu = {
-    selection: 0,
-    currentMenu: Options.main,
-    getCurrentOptions: function () {
+class Menu {
+    #selection  ;
+    #currentMenu;
+    #game;
+    constructor(game){
+        this.getCurrentOptions = this.getCurrentOptions.bind(this);
+        this.renderSelection = this.renderSelection.bind(this);
+        this.renderMenu = this.renderMenu.bind(this);
+        this.navigate = this.navigate.bind(this);
+        this.handleAction = this.handleAction.bind(this);
+        this.game = game;
+        this.currentMenu = Options.main;
+        this.selection = 0;
+    }
+    getCurrentOptions () {
         return this.currentMenu.map(value => value.title);
-    },
-    renderSelection: function (c) {
+    };
+    renderSelection (c) {
         fill(c);
         text('>', (width / 2) - 20, (height / 2) + (this.selection * 30));
-    },
-    renderMenu: function () {
+    };
+    renderMenu () {
         let options = this.getCurrentOptions();
         for (let i = 0; i < options?.length; i++) {
             text(options[i], width / 2, (height / 2) + (i * 30));
         }
         this.renderSelection('yellow');
-    },
-    navigate: function (input, menu) {
+    };
+    navigate (input, menu) {
         // soundPickup.play();
         if (input === 'down' && this.selection < menu?.length - 1) {
             this.selection += 1;
         } else if (input === 'up' && this.selection > 0) {
             this.selection -= 1;
         } else if (input === 'right') {
-            this.handleAction(menu[this.selection].action);
+            this.handleAction(menu[this.selection].action, menu[this.selection].title);
         } else if (input === 'left') {
             this.handleAction('main');
         }
-    },
-    handleAction: function(action) {
+    };
+    handleAction (action, title) {
+        console.log(action, title)
         switch (action) {
             case 'playGame':
                 this.selection = 0;
-                return Game.stateToggle();
+                return this.game.stateToggle();
             default:
                 this.currentMenu = Options[action];
                 this.selection = 0;
                 break;
         }
-    }
+    };
 }
 
 let isLeft;
@@ -84,14 +104,16 @@ let isFalling;
 let isPlummeting;
 
 function preload() {
-    font = loadFont('./EduSABeginner-VariableFont_wght.ttf');
-    sandwhichFont = loadFont('./MacondoSwashCaps-Regular.ttf');
-    soundPickup = loadSound('./MayGenko-pickup.wav');
-    soundPickup1 = loadSound('./MayGenko-pickup1.wav');
-    soundFall = loadSound('./MayGenko-fall.wav');
+    font = loadFont('./assets/EduSABeginner-VariableFont_wght.ttf');
+    sandwhichFont = loadFont('./assets/MacondoSwashCaps-Regular.ttf');
+    soundPickup = loadSound('./assets/MayGenko-pickup.wav');
+    soundPickup1 = loadSound('./assets/MayGenko-pickup1.wav');
+    soundFall = loadSound('./assets/MayGenko-fall.wav');
 }
 
 let x, y;
+let CurrentGame;
+let GameMenu;
 
 
 function setup() {
@@ -102,6 +124,8 @@ function setup() {
     floorPosY = height * 3 / 4;
     x = 0;
     y = 0;
+    CurrentGame = new Game();
+    GameMenu = new Menu(CurrentGame);
     // initChar(floorPosY);
     // startGame();
     // noLoop();
@@ -113,7 +137,7 @@ function drawBlue() {
 }
 
 function draw() {
-    if (Game.isRunning) {
+    if (CurrentGame.isRunning) {
         background(100, 155, 255); //fill the sky blue
         fill('green');
         text('Running', 100, 100);
@@ -124,7 +148,7 @@ function draw() {
         background(255, 145, 0); //fill the menu orange
         fill('red');
         text('Paused', 100, 100);
-        Menu.renderMenu();
+        GameMenu.renderMenu();
     }
 }
 
@@ -146,7 +170,7 @@ function checkKey(k) {
 }
 
 function keyPressed() {
-    if (Game.isRunning) {
+    if (CurrentGame.isRunning) {
         switch (checkKey(key)) {
             case 'left':
                 return 'left';
@@ -155,11 +179,11 @@ function keyPressed() {
             case 'up':
                 return 'up';
             case 'down':
-                Game.stateStop();
+                CurrentGame.stateStop();
                 drawBlue();
                 break;
             case 'pause':
-                Game.stateStop();
+                CurrentGame.stateStop();
                 soundFall.play();
                 break;
             default:
@@ -168,19 +192,19 @@ function keyPressed() {
     } else {
         switch (checkKey(key)) {
             case 'left':
-                Menu.navigate('left', Menu.currentMenu);
+                GameMenu.navigate('left', GameMenu.currentMenu);
                 break;
                 case 'right':
-                Menu.navigate('right', Menu.currentMenu);
+                GameMenu.navigate('right', GameMenu.currentMenu);
                 break;
             case 'up':
-                Menu.navigate('up', Menu.currentMenu);
+                GameMenu.navigate('up', GameMenu.currentMenu);
                 break;
             case 'down':
-                Menu.navigate('down', Menu.currentMenu);
+                GameMenu.navigate('down', GameMenu.currentMenu);
                 break;
             case 'pause':
-                Game.stateToggle();
+                CurrentGame.stateToggle();
                 break;
             default:
                 return;
