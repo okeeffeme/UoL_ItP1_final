@@ -32,12 +32,13 @@ function resizeYPinned(percentage, val, posY = 432) {
     return (percentage * val) / 100 - offset;
 }
 
-function createCanyon(posX, size) {
+function createCanyon(posX, size, f) {
     let c = {
         posX,
         size: size || 100,
+        c: f || color(40,30,0),
         draw: function() {
-            fill(40,30,0);
+            fill(this.c);
             rect(c.posX, 432, c.size, 144);
         }
     }
@@ -72,13 +73,13 @@ function createCoin(posX, posY, value, size) {
                 const posY = this.posY - this.size / 2;
                 const posX = this.posX - (this.size - 30) / 2
                 noStroke();
-                fill(225, 160, 0);
-                rect(posX, posY, this.size - 20, this.size, 200);
-                fill(225, 210, 0);
-                rect(posX - 6, posY, this.size - 20, this.size, 200);
-                stroke(225, 180, 0);
+                fill('gold');
+                rect(posX, posY, this.size - 20, this.size - 15, 200);
+                fill('yellow');
+                rect(posX - 5, posY, this.size - 20, this.size - 15, 200);
+                stroke('gold');
                 strokeWeight(3)
-                rect(posX - 1, posY + 5, this.size - 30, this.size - 10, 200)
+                rect(posX - 1, posY + 5, this.size - 30, this.size - 25, 200)
             }     
         }
     }
@@ -110,6 +111,7 @@ function createPlatforms(posX, posY, length) {
 		posY,
 		length,
 		draw: function() {
+            noStroke();
 			fill('pink');
 			rect(this.posX, this.posY+10, this.length, 5);
             fill('yellow');
@@ -173,7 +175,7 @@ function createTrees(posX, color) {
     let t = {
         posX,
         color: color || colorGreen,
-        height: Math.floor(random(10,40)),
+        height: Math.floor(random(10,65)),
         draw: function() {
             if(this.height%3 === 0) {
                 drawTree2(this.posX, this.color, this.height)
@@ -478,18 +480,18 @@ function drawFinishline(f, font) {
         drawSandwhich(f.posX, f.posY);
     } else {
         noStroke();
-        fill('yellow');
-        ellipse(f.posX, f.posY - 64, 200, 200);
-        fill('darkblue');
-        rect(f.posX+140,f.posY-220, 80, 80, 20, 0, 0, 20);
-        rect(f.posX-200,f.posY-220, 80, 80, 0, 20, 20, 0);
-        fill('blue');
-        rect(f.posX-170,f.posY-240, 360, 80, 20, 20, 0, 0);
+        fill('LightYellow');
+        ellipse(f.posX, f.posY - 64, 200, 200); //halo
+        fill('#1b4468');
+        rect(f.posX+140,f.posY-216, 80, 80, 20, 0, 0, 20); //ribbon ends
+        rect(f.posX-200,f.posY-216, 80, 80, 0, 20, 20, 0);
+        fill('#024e91');
+        rect(f.posX-180,f.posY-230, 360, 80, 20, 20, 6, 6); //ribbon
         fill('yellow');
         textAlign(CENTER);
         strokeJoin(BEVEL);
         textFont(font);
-        text('You did it!', f.posX, f.posY - 180);
+        text('You did it!', f.posX, f.posY - 170);
         drawSandwhich(f.posX - 33, f.posY - 80);
         drawJakeWin(f.posX, f.posY);
         fill('black');
@@ -503,17 +505,20 @@ function drawFinishline(f, font) {
 }
 
 function drawPrismo(prismo) {
-    const mid = height / 2;
-    fill('lightpink')
+    const mid = (height / 2) - 100;
+    fill('pink');
     ellipse(prismo.posX, mid, 300, 200); //face
     rect(prismo.posX-20, mid+90, 40, 40)//neck
-    rect(prismo.posX-120, mid+130, 240, 440, 20,20,0)//body
-    ellipse(prismo.posX, mid-100, 60, 60); //hair
-    ellipse(prismo.posX+50, mid-100, 60, 60);
-    ellipse(prismo.posX+100, mid-80, 60, 60);
-    ellipse(prismo.posX+130, mid-45, 60, 60);
-    ellipse(prismo.posX+150, mid, 60, 60);
-    ellipse(prismo.posX+130, mid+45, 60, 60);
+    rect(prismo.posX-120, mid+130, 240, 440, 20,20,0)//body above ground
+    fill('lightpink');
+    rect(prismo.posX-120, prismo.posY, 240, 440);//body below ground
+    fill('pink');
+    ellipse(prismo.posX, mid-100, 60); //hair
+    ellipse(prismo.posX+50, mid-100, 60);
+    ellipse(prismo.posX+100, mid-80, 60);
+    ellipse(prismo.posX+130, mid-45, 60);
+    ellipse(prismo.posX+150, mid, 60);
+    ellipse(prismo.posX+130, mid+45, 60);
     beginShape(); //nose
     curveVertex(prismo.posX-110, mid+20);
     curveVertex(prismo.posX-110, mid+20);
@@ -525,16 +530,38 @@ function drawPrismo(prismo) {
     ellipse(prismo.posX-40, mid-20, 80, 40); //eye
     fill('cyan');
     ellipse(prismo.posX-40, mid-20, 38); //iris
+    fill('pink')
+    beginShape();
+    curveVertex(prismo.posX-90, mid-40);
+    curveVertex(prismo.posX-90, mid-40);
+    curveVertex(prismo.posX-40, mid-30);
+    curveVertex(prismo.posX+20, mid-40);
+    curveVertex(prismo.posX-20, mid-40);
+    endShape();
     stroke('LightCoral');
     strokeCap(ROUND);
     strokeWeight(10);
     noFill();
-    arc(prismo.posX-90, mid+40, 140, 40, 2*PI, 90);//mouth
+    arc(prismo.posX-90, mid+40, 120, 40, 2*PI, 90);//mouth
+    stroke('pink');
+    strokeWeight(34);
+    arc(prismo.posX-220, mid+241, 140, 127, 55, 12.6);//arm
     noStroke();
+    fill('pink')
+    rect(prismo.posX-167, mid+241, 34, 180);//arm above ground
+    fill('lightpink')
+    rect(prismo.posX-167, prismo.posY, 34, 180);//arm below ground
+    fill('pink')
+    rect(prismo.posX-256, mid+160, 45, 15, 20); //fingers
+    rect(prismo.posX-245, mid+170, 45, 15, 20);
+    rect(prismo.posX-235, mid+180, 45, 15, 20);
 }
 
 //render assets
 function drawAssets(a) {
+    if (!a) { //sometimes we might not want to have a type of asset, just return
+        return;
+    }
     for (let i = 0; i < a.length; i++) {
         a[i].draw();
     }
@@ -543,13 +570,17 @@ function drawAssets(a) {
 function drawScoreboard(s, l, font) {
     textSize(60);
     textAlign(LEFT);
-    fill(225, 210, 0);
-    textFont(font)
+    textFont(font);
+    strokeJoin(BEVEL);
+    stroke('white');
+    strokeWeight(3);
+    fill('black');
     text('dosh ' + s, 15, 70);
     // text('total wins ' + totalWins, 0, height - 20);
+    noStroke();
     textFont('Arial');
     for (let i = 0; i < l; i++) {
-        text('❤️', i * 70, 130)
+        text('❤️', i * 70, 130);
     }
 }
 
@@ -558,14 +589,14 @@ function drawLevelDescription(font1, font2) {
     textSize(80);
     textAlign(LEFT);
     fill('green')
-    text('Sandwhich Time', 40, height - 50);
+    text('Sandwhich Time', 40, height - 60);
     textFont(font2);
     textSize(26);
     fill('white');
     stroke('white');
     strokeJoin(BEVEL);
     strokeWeight(1);
-    text('Help Jake find his sandwhich... W, A, D to move.', 80, height - 20);
+    text('Help Jake find his sandwhich... W, A, D to move.', 80, height - 30);
     noStroke();
 }
 
@@ -600,6 +631,7 @@ function drawLostLife(font, w, h, l) {
     textFont(font);
     textSize(34);
     stroke('grey');
+    strokeWeight(1);
     strokeJoin(BEVEL);
     text('Press F to ', w, h - 50);
     text('stretch out of the hole...', w, h - 10);

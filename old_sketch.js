@@ -25,6 +25,10 @@ let soundVictory;
 let wave;
 let env;
 
+let prismo;
+let test;
+
+
 function preload() {
 	font = loadFont('./assets/EduSABeginner-VariableFont_wght.ttf');
 	fontSandwhich = loadFont('./assets/MacondoSwashCaps-Regular.ttf');
@@ -76,81 +80,32 @@ function isOverCanyon(c) {
 	return isOver;
 }
 
-
-
-
-function startGame() {
-	cameraPosX = 0;
-	
-
+function initGamestate() {
 	gameState = {
 		totalWins: 0,
 		lives: 3,
 		score: 0,
-	}
-
-	finishLine = {
-		posX: 1100,
-		posY: floorPosY,
-		isReached: false
 	};
-
-	allTrees = [];
-	allClouds = [];
-	allMountains = [];
-	initBackground(10);
-
-	allCollectables = [];
-	initAssets('coins', [
-		{posX: 400, posY: 280}, 
-		{posX: 450, posY: 200}, 
-		{posX: 500, posY: 280},
-		{posX: 610, posY: 200},
-		{posX: 690, posY: 300},
-		{posX: 770, posY: 400},
-		{posX: 870, posY: 300},
-		{posX: 960, posY: 400}, 
-	]
-	);
-
-	allCanyons = [];
-	initAssets('canyon', [620,820]);
-
-	allPlatforms = [];
-	allPlatforms.push(createPlatforms(350,340,200));
-
 }
 
-function initAssets(type, args) {
-	const l = args.length;
-	switch (type) {
-		case 'canyon':
-			for (let i = 0; i < l; i++) {
-				allCanyons.push(createCanyon(args[i]));
-			}
-			return;
-		case 'coins':
-			for (let i = 0; i < l; i++) {
-				const vals = Object.values(args[i]);
-				allCollectables.push(createCoin(...vals))
-			}
-			return;
-		
+
+function startGame() {
+	cameraPosX = 0;
+	if (gameState.totalWins === 0) {
+		initLevel_0();
+	} else if (gameState.totalWins === 1) {
+		initLevel_1();
+	} else if (gameState.totalWins === 2) {
+		initLevel_2();
+	} else {
+		initLevel_3();
+
 	}
+
 }
 
-function initBackground(l) {
-	const rand = (a, b) => Math.floor(random(a, b));
-	for (let i = 0; i < l; i++) {
-		let c1 = color(rand(90,100), rand(110,120), rand(180,200));
-		allMountains.push(createMountains(rand(i*200, i*340), c1, rand(60, 100)));
-		let c2 = color(rand(250,255), rand(200,230), rand(200,230));
-		allClouds.push(createCloud(rand(i*220, i*340), rand(i*40, 140), c2));
-		let c3 = color(rand(10,30), rand(40,100), rand(60,70));
-		allTrees.push(createTrees(rand(i*175, i*200), c3));
-	}
-}
 
+//// SOUNDS ////
 function initCustomSound() {
 	env = new p5.Envelope();
 	env.setADSR(0.04, 0.2);
@@ -173,21 +128,22 @@ function playFallSound(){
 	wave.freq(440);
 }
 
+//// SETUP ////
 function setup() {
 	createCanvas(1024, 576);
 	textFont(font);
 	floorPosY = height * 3 / 4;
+	initGamestate();
 	initChar(floorPosY);
 	initCustomSound();
 	startGame();
-
 	// noLoop();
 }
 
 //check finishLine
 //TODO look at
 function checkFinishline() {
-	if (dist(finishLine.posX, floorPosY, gameChar.posX, gameChar.posY) < 10 && !finishLine.isReached) {
+	if (dist(finishLine.posX + 35, finishLine.posY, gameChar.posX, gameChar.posY) < 30 && !finishLine.isReached) {
 		finishLine.isReached = true;
 		soundVictory.play();
 	}
@@ -279,6 +235,7 @@ function checkPlayerDeath(char) {
 			}
 		}
 	} else {
+		initGamestate(); //reset game counters
 		startGame();
 	}
 }
@@ -290,6 +247,7 @@ function resetPlayerRun(charInitY) {
 
 function nextLevel(charInitY) {
 	gameState.totalWins += 1;
+	gameState.lives = 3;
 	initChar(charInitY);
 }
 
@@ -299,8 +257,8 @@ function gatherCollectable(c) {
 		let closeEnough = dist(c[i].posX, c[i].posY, gameChar.posX, gameChar.posY) < 45;
 		if (closeEnough && !c[i].isFound) {
 			soundPickup.play();
-			c[i].size += 7.5; //grow the collectable before they 'pop'
-			if (c[i].size > 65) {
+			c[i].size += 8; //grow the collectable before they 'pop'
+			if (c[i].size > 60) {
 				c[i].isFound = true;
 				gameState.score += c[i].value;
 			}
@@ -314,22 +272,19 @@ function draw() {
 	cameraPosX = getCameraOffset();
 	///////////DRAWING CODE//////////	
 	noStroke();
-	background(100, 155, 255); //fill the sky blue
-	fill(0, 155, 0);
-	rect(0, floorPosY, width, height - floorPosY); //draw some green ground
+
+	drawBase(gameState.totalWins, floorPosY);
 
 	push();
 	translate(-cameraPosX, 0);
-
 
 	drawAssets(allCanyons);
 	drawAssets(allMountains);
 	drawAssets(allClouds);
 	drawAssets(allTrees);
-
-	// drawTrees(allTrees);
  
 	drawAssets(allPlatforms);
+	drawAssets(test);
 	
 	//Interation code
 	handleInteraction();
@@ -337,12 +292,14 @@ function draw() {
 	//the game character
 	handlePlayerMovement();
 
-	// drawCollectable(allCollectables);
 	drawAssets(allCollectables);
 
 
 	drawFinishline(finishLine, font);
-	drawLevelDescription(fontSandwhich, font);
+	drawPrismo(prismo);
+	if (gameState.totalWins === 0) {
+		drawLevelDescription(fontSandwhich, font);
+	}
 	pop();
 
 	drawScoreboard(gameState.score, gameState.lives, font);
@@ -350,6 +307,7 @@ function draw() {
 	gatherCollectable(allCollectables);
 	checkFinishline();
 	checkPlayerDeath(gameChar);
+
 
 }
 
@@ -382,11 +340,14 @@ function keyPressed() {
 				gameChar.isJumping = true;
 			}
 		}
-	} else if (gameChar.isDead) { //reset on death
+	}
+	if (gameChar.isDead) { //reset on death
 		if (checkKey(key) === 'down' || key === 'f' || key === 'F') {
+			console.log('test')
 			resetPlayerRun(floorPosY);
 		}
-	}  else { //move to next level
+	}  
+	if (finishLine.isReached) { //move to next level
 		if (checkKey(key) === 'down' || key === 'f' || key === 'F') {
 			nextLevel(floorPosY);
 			startGame();
@@ -405,5 +366,3 @@ function keyReleased() {
 	}
 
 }
-
-//todo add prismo at end
