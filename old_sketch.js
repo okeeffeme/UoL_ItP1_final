@@ -5,12 +5,10 @@ The Game Project
 let gameChar;
 let floorPosY;
 let initPos;
-let isRunning;
+
+let gameState;
 
 let cameraPosX;
-let totalWins;
-let lives;
-let score;
 
 let allCanyons;
 let allClouds;
@@ -19,9 +17,11 @@ let allMountains;
 let allTrees;
 let allPlatforms;
 
+//assets
 let font;
 let fontSandwhich;
 let soundPickup;
+let soundVictory;
 let wave;
 let env;
 
@@ -29,6 +29,7 @@ function preload() {
 	font = loadFont('./assets/EduSABeginner-VariableFont_wght.ttf');
 	fontSandwhich = loadFont('./assets/MacondoSwashCaps-Regular.ttf');
 	soundPickup = loadSound('./assets/MayGenko-pickup1.wav');
+	soundVictory = loadSound('./assets/MayGenko-victory.wav');
 }
 
 function getCameraOffset() {
@@ -39,7 +40,7 @@ function getCameraOffset() {
 }
 
 function initChar(floorPosY) {
-	initPos = width / 5;
+	initPos = width / 4;
 	gameChar = {
 		posX: initPos,
 		posY: floorPosY,
@@ -80,8 +81,13 @@ function isOverCanyon(c) {
 
 function startGame() {
 	cameraPosX = 0;
-	lives = 3;
-	score = 0;
+	
+
+	gameState = {
+		totalWins: 0,
+		lives: 3,
+		score: 0,
+	}
 
 	finishLine = {
 		posX: 1100,
@@ -89,37 +95,29 @@ function startGame() {
 		isReached: false
 	};
 
-	allTrees = [
-		// { posX: 23 },
-		// { posX: 421 },
-		// { posX: 732 },
-		// { posX: 962 },
-		// { posX: 1231, color: colorYellow }
-	];
-
+	allTrees = [];
 	allClouds = [];
 	allMountains = [];
-	
+	initBackground(10);
+
 	allCollectables = [];
 	initAssets('coins', [
-		{posX: 280, posY: 400}, 
 		{posX: 400, posY: 280}, 
 		{posX: 450, posY: 200}, 
 		{posX: 500, posY: 280},
-		{posX: 600, posY: 340},
-		{posX: 770, posY: 300},
+		{posX: 610, posY: 200},
+		{posX: 690, posY: 300},
+		{posX: 770, posY: 400},
+		{posX: 870, posY: 300},
 		{posX: 960, posY: 400}, 
-
 	]
 	);
-
 
 	allCanyons = [];
 	initAssets('canyon', [620,820]);
 
 	allPlatforms = [];
 	allPlatforms.push(createPlatforms(350,340,200));
-	initBackground(10);
 
 }
 
@@ -182,23 +180,20 @@ function setup() {
 	initChar(floorPosY);
 	initCustomSound();
 	startGame();
-	totalWins = 0;
+
 	// noLoop();
 }
 
-function runGame() {
-	isRunning = true;
-	loop(); 
-}
-
 //check finishLine
+//TODO look at
 function checkFinishline() {
-	if (dist(finishLine.posX, floorPosY, gameChar.posX, gameChar.posY) < 10) {
+	if (dist(finishLine.posX, floorPosY, gameChar.posX, gameChar.posY) < 10 && !finishLine.isReached) {
 		finishLine.isReached = true;
+		soundVictory.play();
 	}
 	if(finishLine.isReached) {
-		console.log('found')
-	}
+	// noLoop();
+}
 }
 
 //handlePlayerMovement
@@ -226,7 +221,9 @@ function handlePlayerMovement() {
 }
 
 ///////////INTERACTION CODE//////////
-function handleInteraction(b) {
+function handleInteraction() {
+	const withinGameLeft = gameChar.posX >= 40;
+	const withinGameRight =  gameChar.posX <= (finishLine.posX+(width/2));
 	if(!finishLine.isReached) {
 		let contact = false;
 		for ( let i = 0; i < allPlatforms.length; i++) {
@@ -236,11 +233,11 @@ function handleInteraction(b) {
 				break
 			}
 		}
-		if (gameChar.isRight) {
-			gameChar.posX += 3;
+		if (gameChar.isRight && withinGameRight) {
+			gameChar.posX += 3; //speed
 		}
-		if (gameChar.isLeft) {
-			gameChar.posX -= 3;
+		if (gameChar.isLeft && withinGameLeft) {
+			gameChar.posX -= 3; //speed
 		}
 		if (gameChar.isJumping && gameChar.currentJumpPower > 0) {
 				gameChar.posY -= 8;
@@ -268,13 +265,12 @@ function handleInteraction(b) {
 //checkPlayerDie
 function checkPlayerDeath(char) {
 	const isPlayerOutOfWorld = char.posY > height;
-	if (lives > 0) {
+	if (gameState.lives > 0) {
 		if (isPlayerOutOfWorld) { //reset
 			char.isDead = true;
-
 			const cHeight = height / 2;
 			const cWidth = width / 2;
-			const nextLife = lives - 1;
+			const nextLife = gameState.lives - 1;
 			drawBandageHeart(cWidth, cHeight) //background for all death messages
 			if (nextLife === 0) {
 				drawEndGame(font, cWidth, cHeight);
@@ -288,12 +284,12 @@ function checkPlayerDeath(char) {
 }
 
 function resetPlayerRun(charInitY) {
-	lives -= 1;
+	gameState.lives -= 1;
 	initChar(charInitY);
 }
 
 function nextLevel(charInitY) {
-	totalWins += 1;
+	gameState.totalWins += 1;
 	initChar(charInitY);
 }
 
@@ -306,7 +302,7 @@ function gatherCollectable(c) {
 			c[i].size += 7.5; //grow the collectable before they 'pop'
 			if (c[i].size > 65) {
 				c[i].isFound = true;
-				score += c[i].value;
+				gameState.score += c[i].value;
 			}
 		}
 	}
@@ -349,11 +345,9 @@ function draw() {
 	drawLevelDescription(fontSandwhich, font);
 	pop();
 
-	drawScoreboard(score, lives, font);
+	drawScoreboard(gameState.score, gameState.lives, font);
 
-	
-
-	gatherCollectable(allCollectables, score);
+	gatherCollectable(allCollectables);
 	checkFinishline();
 	checkPlayerDeath(gameChar);
 
@@ -374,16 +368,15 @@ function checkKey(key) {
 function keyPressed() {
 	// if statements to control the animation of the character when
 	// keys are pressed.	
-	const notFalling = !gameChar.isFalling && !gameChar.isPlummeting;
 	const validState = !gameChar.isDead && !finishLine.isReached;
-	if (validState) {
+	if (validState && !gameChar.isPlummeting) {
 		if (checkKey(key) === 'left') {
 			gameChar.isLeft = true;
 		}
 		if (checkKey(key) === 'right') {
 			gameChar.isRight = true;
 		}
-		if (notFalling) {
+		if (!gameChar.isFalling) {
 			if (checkKey(key) === 'up') {
 				playJumpSound();
 				gameChar.isJumping = true;
@@ -412,3 +405,5 @@ function keyReleased() {
 	}
 
 }
+
+//todo add prismo at end

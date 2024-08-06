@@ -1,6 +1,6 @@
 const colorFur = '#F5BB12';
 const colorFurLight = '#f5CD3D';
-const colorBark = '#ddcfc8';
+const colorBark = '#fff';
 
 const colorGreen = {
     lr: 10,
@@ -346,12 +346,19 @@ function drawJakeWalkingLeft(posX, posY) {
     strokeWeight(5);
     stroke(colorFur);
     noFill();
-    arc(posX, posY - 2, 20, 70, PI, PI * 2); //legs
-    noStroke();
+    if(Math.floor(posX%100) > 50) {
+        arc(posX, posY - 2, 10, 60, PI, PI * 2); //legs
+        noStroke();
+        drawFoot(posX-10, posY, 12);
+        drawFoot(posX-10, posY, 2);
+    } else {
+        arc(posX, posY - 2, 20, 70, PI, PI * 2); //legs
+        noStroke();
+        drawFoot(posX, posY, 8);
+        drawFoot(posX, posY, -12, 4);
+    }
+    
     drawBody(posX, posY);
-
-    drawFoot(posX, posY, 8);
-    drawFoot(posX, posY, -12, 4);
     drawMouthSide(posX, posY);
 
     strokeWeight(5);
@@ -367,11 +374,18 @@ function drawJakeWalkingRight(posX, posY) {
     strokeWeight(5);
     stroke(colorFur);
     noFill();
-    arc(posX, posY - 2, 20, 70, PI, PI * 2); //legs
-    noStroke();
+    if(Math.floor(posX%100) > 50) {
+        arc(posX, posY - 2, 10, 60, PI, PI * 2); //legs
+        noStroke();
+        drawFoot(posX-10, posY, 8);
+        drawFoot(posX-10, posY, 18);
+    } else {
+        arc(posX, posY - 2, 20, 70, PI, PI * 2); //legs
+        noStroke();
+        drawFoot(posX, posY, -8);
+        drawFoot(posX, posY, 12, 4);
+    }
     drawBody(posX, posY);
-    drawFoot(posX, posY, -8);
-    drawFoot(posX, posY, 12, 4);
     drawMouthSide(posX, posY, 12);
 
     strokeWeight(5);
@@ -465,11 +479,17 @@ function drawFinishline(f, font) {
     } else {
         noStroke();
         fill('yellow');
+        ellipse(f.posX, f.posY - 64, 200, 200);
+        fill('darkblue');
+        rect(f.posX+140,f.posY-220, 80, 80, 20, 0, 0, 20);
+        rect(f.posX-200,f.posY-220, 80, 80, 0, 20, 20, 0);
+        fill('blue');
+        rect(f.posX-170,f.posY-240, 360, 80, 20, 20, 0, 0);
+        fill('yellow');
         textAlign(CENTER);
         strokeJoin(BEVEL);
         textFont(font);
         text('You did it!', f.posX, f.posY - 180);
-        ellipse(f.posX, f.posY - 64, 200, 200);
         drawSandwhich(f.posX - 33, f.posY - 80);
         drawJakeWin(f.posX, f.posY);
         fill('black');
@@ -478,7 +498,39 @@ function drawFinishline(f, font) {
         textFont(font);
         text('Press F', f.posX - 180, f.posY);
         text('to continue', f.posX + 200, f.posY);
+        noStroke();
     }
+}
+
+function drawPrismo(prismo) {
+    const mid = height / 2;
+    fill('lightpink')
+    ellipse(prismo.posX, mid, 300, 200); //face
+    rect(prismo.posX-20, mid+90, 40, 40)//neck
+    rect(prismo.posX-120, mid+130, 240, 440, 20,20,0)//body
+    ellipse(prismo.posX, mid-100, 60, 60); //hair
+    ellipse(prismo.posX+50, mid-100, 60, 60);
+    ellipse(prismo.posX+100, mid-80, 60, 60);
+    ellipse(prismo.posX+130, mid-45, 60, 60);
+    ellipse(prismo.posX+150, mid, 60, 60);
+    ellipse(prismo.posX+130, mid+45, 60, 60);
+    beginShape(); //nose
+    curveVertex(prismo.posX-110, mid+20);
+    curveVertex(prismo.posX-110, mid+20);
+    curveVertex(prismo.posX-180, mid-10);
+    curveVertex(prismo.posX-90, mid-70);
+    curveVertex(prismo.posX-90, mid-70);
+    endShape();
+    fill('yellow')
+    ellipse(prismo.posX-40, mid-20, 80, 40); //eye
+    fill('cyan');
+    ellipse(prismo.posX-40, mid-20, 38); //iris
+    stroke('LightCoral');
+    strokeCap(ROUND);
+    strokeWeight(10);
+    noFill();
+    arc(prismo.posX-90, mid+40, 140, 40, 2*PI, 90);//mouth
+    noStroke();
 }
 
 //render assets
