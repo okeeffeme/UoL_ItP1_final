@@ -1,111 +1,117 @@
-Overview
-1. Make a copy of your code from part 3b
+# Final 
 
-2. Make an array of tree positions
+## Overview
 
-- Declare a variable called `trees_x` 
+The final stage of your game project is to make your Game Project awesome! This is your chance to flex your creative muscles, show off your technical skills, and produce a polished game.
 
-- In `setup`, initialise it with an array of numbers. 
+### Complete the base game
 
-- Each number should represent the x-position at which a tree will be drawn on the canvas.
+Firstly you need to make sure that your base game is fully functional and bug free. You will need to have implemented all of the following from the previous game projects:
 
-3. Draw the trees 
+-   Player interaction
+    
+-   Canyons & Coins interaction
+    
+-   A scrollable game world
+    
+-   Score and lives counters
+    
+-   Game over states
+    
 
-- In the `draw` function create a for loop to traverse the `trees_x` array. 
+You’ll also be marked on the gameplay and aesthetics of your game. You can score highly on this category by:
 
-    - HINT: you need to use `trees_x.length` to make sure you loop over every item in the array. 
+-   Creating a playable but challenging level design
+    
+-   Creating coherent and aesthetically pleasing graphics and animations
+    
+-   Making sure your game is bug free and that the player controls are well tweaked (eg. the jump is well timed)
+    
 
-- Copy your tree drawing code from part 2b into the body of the for loop 
+The code philosophy videos "The debugger's mindset" and "Testing" will help you in your attempts to iron out any bugs.
 
-- Now modify your code so that each tree is drawn using the corresponding x position from `trees_x`. 
+Your code also needs to be competently implemented and well-presented. Review your code and check:
 
-    - HINT: If your for loop uses a variable called `i` you can get the x position by using `trees_x[i]` - You should end up with lots of trees in different positions.
+-   Indentation is correct
+    
+-   Whitespace (empty lines and spaces) is properly used
+    
+-   inline comments but NOT commented out code
+    
+-   Consistent and logical variable naming
+    
+-   Good code organisation
+    
 
-4. Make an array of clouds
+You should also check for:
 
-- In `setup`, declare and initialise a `clouds` variable with an array containing some cloud objects (e.g. at least 3). 
+-   Implicitly declared variables, redundant variable declarations or assignments
+    
+-   Appropriate use of local and global variables
+    
+-   Array traversal is correctly implemented
+    
+-   Data structures and function design follow the prescribed scheme or a more advanced scheme that is rational in its design.
+    
+-   Conditional logic is clearly and plainly implemented.
+    
+-   Game elements are correctly anchored
+    
 
-    - HINT: you can copy the one from part 2b but vary the x and y positions of each object.
+If you’re not sure how to do this, then a good idea is to rewatch the code philosophy video “The elegant coder” and also “12 top tips for naming variables.”
 
-5. Draw the clouds
+There are also some bonus points for those students who are able to include advanced techniques such as ES6 syntax and modularisation of code into multiple files. NB. using advanced techniques is an optional extra for those students who feel comfortable doing so. Whichever techniques are applied, they need to be used consistently in a way which demonstrates understanding.
 
-- In the `draw` function create a for loop to traverse the `clouds` array. 
+### Implement extensions
 
-- Copy your cloud drawing code from part 2b into the body of the for loop. 
+The next stage is to extend your code by adding up to three of the extensions which are demonstrated in the final topic:
 
-- Now modify your code so that each cloud is drawn with the position and size determined by the corresponding object in the array
+1. Add sounds Use p5.sound to add sound effects to your game. Watch the tutorial video from the topic to do this.
 
-6. And now for the mountains
+2. Create platforms Use the factory pattern to create platforms. Watch the tutorial video from the topic to do this.
 
-- Repeat stages 4 and 5 for the mountains
+3. Create enemies Use a constructor function to create enemies. Watch the tutorial video from the topic to do this.
 
-7. Implement scrolling
+It’s up to you how many of the three you implement and to what degree you enhance the implementation from the basic tutorial code. The extension is graded with criteria for functionality, creativity and ambition. If you are unsure, then the grading rubric will guide you on how to scope your extension work.
 
-- To create an expansive game world we need to make a virtual camera which follows the game character as they move about the game world 
+### Deliverables
 
-- We're going to do this by making the background scenery scroll in the opposite direction when the game character moves left or right. 
+Hand in your final game project as a compressed folder in .zip format. It should contain the following.
 
-- We can achieve this by using p5’s [`translate`](https://p5js.org/reference/#/p5/translate) function in combination with [`push`](https://p5js.org/reference/#/p5/push) and [`pop`](https://p5js.org/reference/#/p5/pop) 
+-   Your final game project code
+    
+-   All assets needed to run the code (html files, library files, images, sound files etc.)
+    
+-   A commentary of around 250 words in PDF format. This should describe:
+    
+    -   your extension(s)
+        
+    -   the bits you found difficult
+        
+    -   the skills you learnt/practiced in completing the game project
+        
 
-- Make sure you've read about how these work before attempting the following steps
+## Review Criteria
 
-    - Declare a variable called `cameraPosX` and initialise it to 0 
+**Base application (25 marks)**
 
-    - Make sure that all of code which draws all of your game scenery appears consecutively within your draw loop directly BEFORE the code which draws your game character. 
+-   Base functionality [6]
+    
+-   Code presentation [6]
+    
+-   Code competency [6]
+    
+-   Advanced code techniques bonus [3]
+    
+-   Game play, level design and aesthetics [4]
+    
 
-    - Just *After* the code which draws the ground and just *Before* your first item of game scenery, add the command `push()` followed by the command `translate(-cameraPosX, 0)`
+**Extension (12 marks)**
 
-    - Just *After* the code which draws the game character add the command `pop()` 
+functionality [4]
 
-    - Now `cameraPosX` controls the left most position of where the camera is within the game world.  
+creativity [4]
 
-    - At the start of the draw loop, write a line of code to continually change the value of cameraPosX so that the game character always appears in the center of the screen but the background moves behind them. 
+Extensions - ambition [4]
 
-    - Test that your canyon and collectable still interact as expected
-
-8. Code Presentation
-
-Make sure you produce readable code: 
-
-- Use correct indentation 
-
-- Remove unnecessary whitespace 
-
-- Remove any unused commented-out code 
-
-- Remove old and redundant variable declarations 
-
-- Make sure all variables are declared 
-
-- Name your variables carefully 
-
-- Include brief, descriptive comments for each section 
-
-9. Submission format 
-
-- Before submitting make sure that your code runs and that all the necessary files are included in the sketch folder 
-
-- Zip the sketch folder. Make sure that it is only zipped at one level and that the file extension is a .zip
-
-
-
-
-Review Criteria
-
-- Character Interaction & Rendering (5)
-
-- Collectable Interaction (5)
-
-- Canyon Interaction (5)
-
-- Anchoring of background objects (5)
-
-- Initialisation of data structures (5)
-
-- Traversal using for loops (5)
-
-- Scrolling Implementation (3)
-
-- Code Quality (6)
-
-- Submission organisation (1)
+**Commentary and deliverables (3 marks)**
