@@ -103,7 +103,7 @@ function initLevel (floor, finish) {
 function initLevel_0(floorPosY) { //treehouse
 	let level = new initLevel(floorPosY, 1100);
 	
-	initBackground(level, 'trees', 8, { 
+	initBackground(level, 'trees', 10, { 
 		rl: 10, 
 		rh: 30, 
 		gl: 40, 

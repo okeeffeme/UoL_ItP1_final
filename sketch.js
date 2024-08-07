@@ -23,6 +23,8 @@ function preload() {
 	fontSandwhich = loadFont('./assets/MacondoSwashCaps-Regular.ttf');
 	soundPickup = loadSound('./assets/MayGenko-pickup1.wav');
 	soundVictory = loadSound('./assets/MayGenko-victory.wav');
+	soundPickup.setVolume(0.3);
+	soundVictory.setVolume(0.3);
 }
 
 function getCameraOffset() {
@@ -81,15 +83,13 @@ function initGamestate() {
 function startGame() {
 	level = getCurrentLevel(gameState.totalWins);
 	cameraPosX = 0;
-	
-
 }
 
 
 //// SOUNDS ////
 function initCustomSound() {
-	env = new p5.Envelope();
-	env.setADSR(0.04, 0.2);
+	env = new p5.Envelope(0.2, 0.3);
+	env.setADSR(0.02, 0.2);
 	wave = new p5.Oscillator('sawtooth');
 	wave.amp(env);
 	wave.freq(440)
@@ -98,7 +98,7 @@ function initCustomSound() {
 
 //Jump and Fall cannot play at the same time, so we're just modifying the same oscillator
 function playJumpSound(){
-	env.ramp(wave, 0, 1.2, 0);
+	env.ramp(wave, 0, 0.3, 0);
 	wave.freq(600,0.2);
 	wave.freq(440);
 }
@@ -111,7 +111,8 @@ function playFallSound(){
 
 //// SETUP ////
 function setup() {
-	const cnv = createCanvas(windowWidth, 576);
+	const w = windowWidth >= 1040 ? windowWidth : 1040;
+	const cnv = createCanvas(w, 576);
 	cnv.parent('myCanvas');
 	floorPosY = height * 3 / 4;
 	textFont(font);
@@ -242,11 +243,11 @@ function gatherCollectable(c) {
 		let closeEnough = dist(c[i].posX, c[i].posY, gameChar.posX, gameChar.posY) < 45;
 		if (closeEnough && !c[i].isFound) {
 			soundPickup.play();
-			c[i].size += 8; //grow the collectable before they 'pop'
-			if (c[i].size > 56) {
+			// c[i].size += 8; //grow the collectable before they 'pop'
+			// if (c[i].size > 56) {
 				c[i].isFound = true;
 				gameState.score += c[i].value;
-			}
+			// }
 		}
 	}
 }
