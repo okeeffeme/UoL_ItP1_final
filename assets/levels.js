@@ -1,14 +1,14 @@
-function drawBase(level) {
+function drawBase(level, floorY, w, h) {
 	switch (level) {
 		case 0: //treehouse
 			background('CornflowerBlue'); //sky
 			fill(0, 155, 0);
-			rect(0, floorPosY, width, height - floorPosY); //ground
+			rect(0, floorY, w, h - floorY); //ground
 			break;
 		case 1: //candykingdom
 			background('LavenderBlush'); //sky
 			fill('SlateBlue');
-			rect(0, floorPosY, width, height - floorPosY); //ground
+			rect(0, floorY, w, h - floorY); //ground
 			break;
 		case 2: //sky
 			background('lavender'); //fill the sky
@@ -16,96 +16,121 @@ function drawBase(level) {
 		default: //prismo
 			background('yellow'); //wall
 			fill('gold');
-			rect(0, floorPosY, width, height - floorPosY); //floor
+			rect(0, floorY, w, h - floorY); //floor
 			break;
 	}
 }
 
-function initAssets(type, args) {
-	const l = args.length;
+function handleType(level, type, options) {
 	switch (type) {
 		case 'canyon':
-			for (let i = 0; i < l; i++) {
-				const vals = Object.values(args[i]);
-				allCanyons.push(createCanyon(...vals));
-			}
-			return;
+			return level.allCanyons.push(createCanyon(...options));
+		case 'clouds':
+			return level.allClouds.push(createCloud(...options)); 
 		case 'coins':
-			for (let i = 0; i < l; i++) {
-				const vals = Object.values(args[i]);
-				allCollectables.push(createCoin(...vals))
-			}
-			return;
+			return level.allCollectables.push(createCoin(...options));
+		case 'mountains':
+			return level.allMountains.push(createMountain(...options));
 		case 'platforms':
-			for (let i = 0; i < l; i++) {
-				const vals = Object.values(args[i]);
-				allPlatforms.push(createPlatforms(...vals))
-			}
+			return level.allPlatforms.push(createPlatforms(...options));
+		case 'trees':
+			return level.allTrees.push(createTrees(...options));
+		default:
 			return;
-
 	}
 }
 
-function initBackground(type, num, c, ...extra) { //color is expecting an obj
+function createOptions(i, type, c, extra) {
 	const rand = (a, b) => Math.floor(random(a, b));
+	const cRand = color(rand(c.rl, c.rh), rand(c.gl, c.gh), rand(c.bl, c.bh));
 	switch (type) {
 		case 'mountains':
-			for (let i = 0; i <= num; i++) {
-				const cRand = color(rand(c.rl, c.rh), rand(c.gl, c.gh), rand(c.bl, c.bh),);
-				allMountains.push(createMountains(rand(i * 200, i * 340), cRand, rand(60, 100)));
-			}
-			return;
+			return [rand(i * 200, i * 340), cRand, rand(60, 100)];
 		case 'clouds':
-			for (let i = 0; i <= num; i++) {
-				const cRand = color(rand(c.rl, c.rh), rand(c.gl, c.gh), rand(c.bl, c.bh),);
-				let yLock = 140; 
-				if(extra[0] === 'extraClouds') { 
-					yLock = height; //handle the Y-axis for the sky level
-				}
-				allClouds.push(createCloud(rand(i * 100, i * 200), rand(20, yLock), cRand)); 
-			}
-			return;
+			return [rand(i * 100, i * 200), rand(20, extra), cRand];
 		case 'trees':
-			for (let i = 0; i <= num; i++) {
-				const cRand = color(rand(c.rl, c.rh), rand(c.gl, c.gh), rand(c.bl, c.bh),);
-				allTrees.push(createTrees(rand(i * 175, i * 200), cRand));
-			}
+			return [rand(i * 175, i * 200), cRand];
+		default:
 			return;
-
 	}
 }
 
+function initAssets(level, type, options) {
+	const l = options.length;
+	for (let i = 0; i < l; i++) {
+		const vals = Object.values(options[i]);
+		handleType(level, type, vals);
+	}
+};
 
-function initLevel_0() { //treehouse
-	finishLine = {
-		posX: 1100,
-		posY: floorPosY,
-		isReached: false
+function initBackground(level, type, num, c, extra) {
+	const yLock = extra === 'extraClouds' ? height : 140; 
+	for (let i = 0; i <= num; i++) {
+		const options = createOptions(i, type, c, yLock);
+		handleType(level, type, options);
+	}
+}
+
+function initLevel (floor, finish) {
+	const l = {
+		allTrees: [],
+		allClouds: [],
+		allMountains: [],
+		allCollectables: [],
+		allCanyons: [],
+		allPlatforms: [],
+		finishLine: {
+			posX: finish,
+			posY: floor,
+			isReached: false
+		},
+		pickle: {
+			posX: 100,
+			posY: floor,
+			isFound: false,
+			value: 0,
+			jumpPower: 20
+		},
+		prismo: {
+			posX: finish + (width / 2) + 300,
+			posY: floor,
+		}
 	};
 
-	prismo = {
-		posX: finishLine.posX + (width / 2) + 300,
-		posY: floorPosY,
-	}
+	return l;
+}
+
+function initLevel_0(floorPosY) { //treehouse
+	let level = new initLevel(floorPosY, 1100);
 	
-	pickle = {
-		posX: 100,
-		posY: floorPosY,
-		isFound: false,
-		value: 0,
-		jumpPower: 20
-	}
+	initBackground(level, 'trees', 8, { 
+		rl: 10, 
+		rh: 30, 
+		gl: 40, 
+		gh: 100, 
+		bl: 60, 
+		bh: 70 
+	});
 
-	allTrees = [];
-	initBackground('trees', 10, { rl: 10, rh: 30, gl: 40, gh: 100, bl: 60, bh: 70 });
-	allClouds = [];
-	initBackground('clouds', 10, { rl: 210, rh: 220, gl: 200, gh: 220, bl: 220, bh: 240 });
+	initBackground(level,'clouds', 10, { 
+		rl: 210, 
+		rh: 220, 
+		gl: 200, 
+		gh: 220, 
+		bl: 220, 
+		bh: 240 
+	});
 
-	allMountains = [];
-	initBackground('mountains', 10, { rl: 90, rh: 100, gl: 110, gh: 120, bl: 180, bh: 200 });
+	initBackground(level,'mountains', 10, { 
+		rl: 90, 
+		rh: 100, 
+		gl: 110, 
+		gh: 120, 
+		bl: 180, 
+		bh: 200 
+	});
 
-	allCollectables = [];
-	initAssets('coins', [
+	initAssets(level, 'coins', [
 		{ posX: 400, posY: 280 },
 		{ posX: 450, posY: 200 },
 		{ posX: 500, posY: 280 },
@@ -119,41 +144,22 @@ function initLevel_0() { //treehouse
 		{ posX: 1300, posY: 400, value: 50, size: 40 },
 		{ posX: 1600, posY: 400, value: 50, size: 40 },
 
-	]
-	);
+	]);
 
-	allCanyons = [];
-	initAssets('canyon', [{posX: 620}, {posX: 820}]);
+	initAssets(level, 'canyon', [{posX: 620}, {posX: 820}]);
 
-	allPlatforms = [];
-	initAssets('platforms', [
+	initAssets(level, 'platforms', [
 		{ posX: 350, posY: 340, length: 200},
 	]
 	);
+
+	return level;
 }
 
 function initLevel_1() { //candykingdom
-	finishLine = {
-		posX: 1100,
-		posY: floorPosY,
-		isReached: false
-	};
+	let level = new initLevel(floorPosY, 1100);
 
-	prismo = {
-		posX: finishLine.posX + (width / 2) + 300,
-		posY: floorPosY,
-	}
-	
-	pickle = {
-		posX: 100,
-		posY: floorPosY,
-		isFound: false,
-		value: 0,
-		jumpPower: 20
-	}
-
-	allTrees = [];
-	initBackground('trees', 10,  { 
+	initBackground(level, 'trees', 10,  { 
 		rl: 230, 
 		rh: 255, 
 		gl: 80, 
@@ -161,8 +167,8 @@ function initLevel_1() { //candykingdom
 		bl: 120, 
 		bh: 180
 	});
-	allClouds = [];
-	initBackground('clouds', 20,  { 
+
+	initBackground(level, 'clouds', 20, { 
 		rl: 250, 
 		rh: 255, 
 		gl: 200, 
@@ -171,8 +177,7 @@ function initLevel_1() { //candykingdom
 		bh: 230 
 	});
 
-	allMountains = [];
-	initBackground('mountains', 10, { 
+	initBackground(level, 'mountains', 10, { 
 		rl: 138, 
 		rh: 216, 
 		gl: 112, 
@@ -181,8 +186,7 @@ function initLevel_1() { //candykingdom
 		bh: 226 
 	});
 
-	allCollectables = [];
-	initAssets('coins', [
+	initAssets(level, 'coins', [
 		{ posX: 400, posY: 280 },
 		{ posX: 450, posY: 200 },
 		{ posX: 500, posY: 280 },
@@ -194,48 +198,29 @@ function initLevel_1() { //candykingdom
 		{ posX: 1030, posY: 80 },
 		{ posX: 760, posY: 400, value: 50, size: 40 },
 		{ posX: 980, posY: 400, value: 50, size: 40 },
-	]
-	);
+	]);
 
-	allCanyons = [];
-	initAssets('canyon', [
+	initAssets(level, 'canyon', [
 		{posX: 560, length: 140}, 
 		{posX: 820, length: 140}]
 	);
 
-	allPlatforms = [];
-	initAssets('platforms', [
+	initAssets(level, 'platforms', [
 		{ posX: 350, posY: 340, length: 200},
 		{ posX: 604, posY: 220, length: 200},
 		{ posX: 872, posY: 120, length: 200},
-	]
-	);
+	]);
+
+	return level;
 }
 
+
 function initLevel_2() { //sky
-	finishLine = {
-		posX: 1080,
-		posY: floorPosY,
-		isReached: false
-	};
+	let level = new initLevel(floorPosY, 1080);
 
-	prismo = {
-		posX: finishLine.posX + (width / 2) + 300,
-		posY: floorPosY,
-	}
+	//no trees or mountains for cloud level
 
-	pickle = {
-		posX: 100,
-		posY: floorPosY,
-		isFound: false,
-		value: 0,
-		jumpPower: 20
-	}
-
-	allTrees = []; //no trees for cloud level
-	allMountains = []; //no mountains for cloud level
-	allClouds = [];
-	initBackground('clouds', 40,  { 
+	initBackground(level, 'clouds', 40, { 
 		rl: 240, 
 		rh: 248, 
 		gl: 248, 
@@ -244,9 +229,7 @@ function initLevel_2() { //sky
 		bh: 255 
 	}, 'extraClouds');
 
-
-	allCollectables = [];
-	initAssets('coins', [
+	initAssets(level, 'coins', [
 		{ posX: 390, posY: 300 },
 		{ posX: 440, posY: 300 },
 		{ posX: 490, posY: 300 },
@@ -258,43 +241,44 @@ function initLevel_2() { //sky
 		{ posX: 1020, posY: 80 },
 		{ posX: 1110, posY: 200, value: 50, size: 40 },
 		{ posX: 1110, posY: 300, value: 50, size: 40 },
+	]);
 
-	]
-	);
-
-	allCanyons = [];
-	initAssets('canyon', [
+	initAssets(level, 'canyon', [
 		{posX: 280, length: width, fill: 'lavender'}, 
-	],
-	);
+	]);
 
-	allPlatforms = [];
-	initAssets('platforms', [
+	initAssets(level, 'platforms', [
 		{ posX: 80, posY: floorPosY, length: 200},
 		{ posX: 350, posY: 340, length: 200},
 		{ posX: 604, posY: 220, length: 200},
 		{ posX: 872, posY: 120, length: 200},
-	]
-	);
+	]);
+
+	return level;
 }
 
 
-function initLevel_3() { //prismo
-	finishLine = {
-		posX: 700,
-		posY: floorPosY,
-		isReached: false
-	};
+function initLevel_3(level) { //prismo
+	level = new initLevel(floorPosY, 700);
 
-	prismo = {
-		posX: finishLine.posX + 300,
-		posY: floorPosY,
+	//just prismo on the final level
+
+	level.prismo = {
+		posX: level.finishLine.posX + 300,
 	}
 
-	allTrees = [];
-	allClouds = [];
-	allMountains = [];
-	allCollectables = [];
-	allCanyons = [];
-	allPlatforms = [];
+	return level;
+}
+
+function getCurrentLevel(wins) {
+	switch (wins) {
+		case 0:
+			return initLevel_0(floorPosY);
+		case 1:
+			return initLevel_1(floorPosY);
+		case 2:
+			return initLevel_2(floorPosY);
+		default:
+			return initLevel_3(floorPosY);
+	}
 }
