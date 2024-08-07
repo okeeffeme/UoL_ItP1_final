@@ -87,6 +87,14 @@ function initLevel_0() { //treehouse
 		posX: finishLine.posX + (width / 2) + 300,
 		posY: floorPosY,
 	}
+	
+	pickle = {
+		posX: 100,
+		posY: floorPosY,
+		isFound: false,
+		value: 0,
+		jumpPower: 20
+	}
 
 	allTrees = [];
 	initBackground('trees', 10, { rl: 10, rh: 30, gl: 40, gh: 100, bl: 60, bh: 70 });
@@ -134,6 +142,14 @@ function initLevel_1() { //candykingdom
 	prismo = {
 		posX: finishLine.posX + (width / 2) + 300,
 		posY: floorPosY,
+	}
+	
+	pickle = {
+		posX: 100,
+		posY: floorPosY,
+		isFound: false,
+		value: 0,
+		jumpPower: 20
 	}
 
 	allTrees = [];
@@ -208,6 +224,14 @@ function initLevel_2() { //sky
 		posY: floorPosY,
 	}
 
+	pickle = {
+		posX: 100,
+		posY: floorPosY,
+		isFound: false,
+		value: 0,
+		jumpPower: 20
+	}
+
 	allTrees = []; //no trees for cloud level
 	allMountains = []; //no mountains for cloud level
 	allClouds = [];
@@ -223,15 +247,15 @@ function initLevel_2() { //sky
 
 	allCollectables = [];
 	initAssets('coins', [
-		{ posX: 120, posY: 400 },
-		{ posX: 170, posY: 400 },
-		{ posX: 400, posY: 300 },
-		{ posX: 450, posY: 300 },
-		{ posX: 500, posY: 300 },
+		{ posX: 390, posY: 300 },
+		{ posX: 440, posY: 300 },
+		{ posX: 490, posY: 300 },
 		{ posX: 650, posY: 180 },
 		{ posX: 700, posY: 180 },
 		{ posX: 750, posY: 180 },
-		{ posX: 960, posY: 90 },
+		{ posX: 920, posY: 80 },
+		{ posX: 970, posY: 80 },
+		{ posX: 1020, posY: 80 },
 		{ posX: 1110, posY: 200, value: 50, size: 40 },
 		{ posX: 1110, posY: 300, value: 50, size: 40 },
 

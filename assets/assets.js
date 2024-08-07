@@ -504,6 +504,25 @@ function drawFinishline(f, font) {
     }
 }
 
+function drawPickles(pickle) {
+    if(!pickle.isFound) {
+        fill('PowderBlue');
+        stroke('LightBlue');
+        strokeWeight(4);
+        rect(pickle.posX,pickle.posY-50, 40,50, 10, 10, 4,4); //jar
+        fill('lightgrey');
+        noStroke();
+        rect(pickle.posX,pickle.posY-60, 40,10); //jar lid
+        fill('Aquamarine');
+        rect(pickle.posX,pickle.posY-40,40,40,0,0,4,4); //pickle juice
+        noFill();
+        stroke('OliveDrab');
+        strokeWeight(12);
+        arc(pickle.posX+9,pickle.posY-25,30,40,12.2, 13.5); //pickle
+        noStroke();
+    }
+}
+
 function drawPrismo(prismo) {
     const mid = (height / 2) - 100;
     fill('pink');
@@ -614,6 +633,7 @@ function drawEndGame(font, w, h) {
     textFont(font);
     textSize(34);
     stroke('grey');
+    strokeWeight(1);
     strokeJoin(BEVEL);
     text('Give all your dosh', w, h - 50);
     text('to Doctor Princess!', w, h - 10);
@@ -642,4 +662,13 @@ function drawLostLife(font, w, h, l) {
     rect(w - 50, h + 5, 100, 90, 20);
     fill('black')
     text('Jake has ' + (l) + ' ' + pointsMessage + ' left.', w, h + 60);
+    if (l === 1) {
+        fill('yellow');
+        rect(w-280,h+80, 560, 60);
+        fill('black');
+        stroke('white');
+        strokeWeight(3);
+        text('Hint: Pickles boost your jumping power!', w, h + 120);
+        noStroke();
+    }
 }

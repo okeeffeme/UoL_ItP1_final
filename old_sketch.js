@@ -16,6 +16,7 @@ let allCollectables;
 let allMountains;
 let allTrees;
 let allPlatforms;
+let pickle;
 
 //assets
 let font;
@@ -258,11 +259,21 @@ function gatherCollectable(c) {
 		if (closeEnough && !c[i].isFound) {
 			soundPickup.play();
 			c[i].size += 8; //grow the collectable before they 'pop'
-			if (c[i].size > 60) {
+			if (c[i].size > 56) {
 				c[i].isFound = true;
 				gameState.score += c[i].value;
 			}
 		}
+	}
+}
+
+//gather pickle
+function picklePickup(p) {
+	let closeEnough = dist(p.posX, p.posY, gameChar.posX, gameChar.posY) < 45;
+	if (closeEnough && !p.isFound && gameState.lives === 1) {
+		soundPickup.play();
+		p.isFound = true;
+		gameChar.totalJumpPower += p.jumpPower;
 	}
 }
 
@@ -297,6 +308,9 @@ function draw() {
 
 	drawFinishline(finishLine, font);
 	drawPrismo(prismo);
+	if (gameState.lives === 1) {
+		drawPickles(pickle);
+	}
 	if (gameState.totalWins === 0) {
 		drawLevelDescription(fontSandwhich, font);
 	}
@@ -305,6 +319,7 @@ function draw() {
 	drawScoreboard(gameState.score, gameState.lives, font);
 
 	gatherCollectable(allCollectables);
+	picklePickup(pickle)
 	checkFinishline();
 	checkPlayerDeath(gameChar);
 
